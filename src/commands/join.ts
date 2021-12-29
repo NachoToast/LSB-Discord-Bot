@@ -6,16 +6,13 @@ class Join implements Command {
     public readonly aliases: string[] | undefined = ['j'];
 
     public async execute({ client, message }: CommandParams) {
-        const newUser = client.dataManager.createUserBalance(
-            message.author.id,
-            client.initialBalance,
-        );
+        const newUser = client.dataManager.createUser(message.author.id, client.initialBalance);
         if (newUser) {
             message.channel.send(
                 `Successfully joined the market, you now have **${client.initialBalance}** Param Pupees!`,
             );
         } else {
-            message.channel.send(`Failed to join the market, please contact NachoToast :P`);
+            message.channel.send(`You can't join the market twice!`);
         }
     }
 }

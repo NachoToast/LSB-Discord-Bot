@@ -1,12 +1,12 @@
+import moment from 'moment';
 import Client from '../client/Client';
 import Command, { CommandParams } from '../client/Command';
 import { selfNotInMarket, themNotInMarket } from '../messages/basicFeedback';
 
-class Balance implements Command {
-    public readonly name: string = 'balance';
-    public readonly description: string =
-        'Check the number of Param Pupees you or someone else has';
-    public readonly aliases: string[] | undefined = ['bal'];
+class Portfolio implements Command {
+    public readonly name: string = 'portfolio';
+    public readonly description: string = 'Get information about a user in the market';
+    public readonly aliases: string[] | undefined = ['profile', 'user'];
 
     public async execute({ client, message, args }: CommandParams) {
         let searchTerm: string = message.author.id;
@@ -21,20 +21,22 @@ class Balance implements Command {
         }
 
         const user = client.dataManager.getUser(searchTerm);
-        if (user === undefined) {
+        if (!user) {
             if (external) {
                 message.channel.send(themNotInMarket(searchTerm));
             } else {
                 message.channel.send(selfNotInMarket);
             }
         } else {
-            if (external) {
-                message.channel.send(`<@${searchTerm}> has **${user.balance}** Param Pupees`);
-            } else {
-                message.channel.send(`You have **${user.balance}** Param Pupees`);
-            }
+            let header = external ? `<@${searchTerm}>'s Portfolio:` : `Your Portfolio:`;
+            let balance = `Balance: **${user.balance}**`;
+            let joined = `Joined: ${new Date(user.registered).toLocaleDateString()} (${moment(
+                user.registered,
+            ).fromNow()})`;
+
+            message.channel.send([header, balance, joined].join('\n'));
         }
     }
 }
 
-export default new Balance();
+export default new Portfolio();

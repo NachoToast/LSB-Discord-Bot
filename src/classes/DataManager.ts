@@ -1,54 +1,53 @@
 import fs from 'fs';
+import User from '../models/User';
 
 export class DataManager {
-    private _balanceData: { [discordID: string]: number } = {};
+    private _userData: { [discordID: string]: User };
 
     public constructor() {
-        const filesToMake: [string, any][] = [['balances', {}]];
-
+        // getting the data/users.json file contents
         try {
-            fs.mkdirSync('data');
+            this._userData = JSON.parse(fs.readFileSync(`data/users.json`, 'utf-8'));
         } catch (error: any) {
-            if (error?.code !== 'EEXIST') {
-                console.log(`Error making data folder`);
+            if (error?.code !== 'ENOENT') {
                 console.log(error);
                 process.exit();
             }
-        }
-
-        for (const [fileName, data] of filesToMake) {
             try {
-                fs.writeFileSync(`data/${fileName}.json`, JSON.stringify(data, null, 4));
+                fs.mkdirSync('data');
+                fs.writeFileSync('data/users.json', JSON.stringify({}, null, 4));
             } catch (error: any) {
                 if (error?.code !== 'EEXIST') {
-                    console.log(`Error making file '${fileName}'`);
                     console.log(error);
                     process.exit();
                 }
+                fs.writeFileSync('data/users.json', JSON.stringify({}, null, 4));
             }
+            this._userData = {};
         }
-
-        this._balanceData = JSON.parse(fs.readFileSync('data/balances.json', 'utf8'));
     }
 
-    public getUserBalance(id: string): number | undefined {
-        return this._balanceData[id];
+    public getUser(id: string): User | undefined {
+        return this._userData[id];
     }
-    public createUserBalance(id: string, initialBalance: number): boolean {
-        if (this._balanceData[id] !== undefined) return false;
-        this._balanceData[id] = initialBalance;
-        this.saveBalanceData();
+    public createUser(id: string, balance: number): boolean {
+        if (this._userData[id] !== undefined) return false;
+        this._userData[id] = {
+            balance,
+            registered: Date.now(),
+        };
+        this.save();
         return true;
     }
     public updateUserBalance(id: string, newBalance: number): boolean {
-        if (this._balanceData[id] === undefined) return false;
-        this._balanceData[id] = newBalance;
-        this.saveBalanceData();
+        if (this._userData[id] === undefined) return false;
+        this._userData[id].balance = newBalance;
+        this.save();
         return true;
     }
 
-    private async saveBalanceData() {
-        fs.writeFileSync(`data/balances.json`, JSON.stringify(this._balanceData, null, 4));
+    private async save() {
+        fs.writeFileSync(`data/users.json`, JSON.stringify(this._userData, null, 4));
     }
 }
 
