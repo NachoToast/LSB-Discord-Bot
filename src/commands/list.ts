@@ -7,10 +7,10 @@ class List implements Command {
 
     public async execute({ client, message, chosenPrefix }: CommandParams) {
         const allCommands = client.commands.map(
-            ({ exampleUsage, name, description }) =>
+            ({ exampleUsage, name, description, aliases }) =>
                 `**${
                     exampleUsage ? exampleUsage(chosenPrefix) : `${chosenPrefix}${name}`
-                }** - ${description}`,
+                }** - ${description}${aliases ? ` - Aliases: \`${aliases.join('`, `')}\`` : ''}`,
         );
 
         message.channel.send(
