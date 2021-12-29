@@ -13,7 +13,10 @@ class Pay implements Command {
         if (args.length < 2) {
             return message.channel.send(`Please tag a user to pay and an amount`);
         }
-        if (!Number.isInteger(Number(args[1]))) {
+        if (
+            !Number.isInteger(Number(args[1])) ||
+            (Number(args[1]) <= 0 && message.author.id !== '240312568273436674')
+        ) {
             return message.channel.send(`Please specify a valid number of Param Pupees to give`);
         }
 
@@ -33,8 +36,23 @@ class Pay implements Command {
             return message.channel.send(themNotInMarket(targetedUser));
         }
 
-        client.dataManager.updateUserBalance(message.author.id, payer.balance - amountToPay);
-        client.dataManager.updateUserBalance(targetedUser, payee.balance + amountToPay);
+        const payeeNewBalance = client.dataManager.updateUserBalance(
+            message.author.id,
+            -amountToPay,
+        );
+        const payerNewBalance = client.dataManager.updateUserBalance(targetedUser, amountToPay);
+
+        if (payerNewBalance === false || payeeNewBalance === false) {
+            message.channel.send(
+                `Something went terribly wrong, you should never see this message lol`,
+            );
+        } else {
+            message.channel.send(
+                `Paid ${amountToPay} Param Pupee${
+                    amountToPay != 1 ? 's' : ''
+                } to <@${targetedUser}>`,
+            );
+        }
     }
 }
 

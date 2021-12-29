@@ -39,11 +39,11 @@ export class DataManager {
         this.save();
         return true;
     }
-    public updateUserBalance(id: string, newBalance: number): boolean {
+    public updateUserBalance(id: string, amountToAdd: number): false | number {
         if (this._userData[id] === undefined) return false;
-        this._userData[id].balance = newBalance;
+        this._userData[id].balance += amountToAdd;
         this.save();
-        return true;
+        return this._userData[id].balance;
     }
 
     private async save() {
