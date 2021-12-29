@@ -1,3 +1,4 @@
 {
-    "prefixes": ["!"]
+    "prefixes": ["!"],
+    "initialBalance": 100
 }
