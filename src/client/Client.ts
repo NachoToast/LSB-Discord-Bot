@@ -29,6 +29,9 @@ class Client extends DiscordClient {
     public constructor() {
         super({ intents });
 
+        // asynchronously set up data files
+        this.makeData();
+
         // loading stuff from the config.json and auth.json files
         try {
             const config: Config = require('../../config.json');
@@ -53,14 +56,14 @@ class Client extends DiscordClient {
                 }
             }
             if (!handled) {
-                console.log(`Unknown error occured`);
+                console.log(`Unknown error occurred loading config and auth files.`);
                 console.log(error);
             }
             process.exit();
         }
 
         // loading commands
-        {
+        try {
             process.stdout.write('Loading Commands: '); // use stdout because console appends newline
             let fgC = 0; // foreground colour
 
@@ -99,6 +102,34 @@ class Client extends DiscordClient {
             process.stdout.write('\n');
             if (duplicateCommandsMessage.length) {
                 console.log(duplicateCommandsMessage.join('\n'));
+            }
+        } catch (error) {
+            console.log(`Unknown error occurred loading commands.`);
+            console.log(error);
+            process.exit();
+        }
+    }
+
+    private async makeData(): Promise<void> {
+        const filesToMake: { name: string; directory?: boolean }[] = [
+            { name: 'data', directory: true },
+            { name: 'data/users.json' },
+        ];
+
+        for (const { name, directory } of filesToMake) {
+            try {
+                if (directory) {
+                    fs.mkdirSync(name);
+                } else {
+                    fs.writeFileSync(name, JSON.stringify([], null, 4));
+                }
+            } catch (error: any) {
+                if (error?.code === 'EEXIST') {
+                    continue;
+                } else {
+                    console.log(`Error making ${name} ${directory ? 'directory' : 'file'}`);
+                    process.exit();
+                }
             }
         }
     }

@@ -1,4 +1,3 @@
-import { Message } from 'discord.js';
 import Command, { CommandParams } from '../client/Command';
 
 class Ping implements Command {
