@@ -16,6 +16,7 @@ class Pay implements Command {
             return message.channel.send(`Please tag a user to pay and an amount`);
         }
         if (
+            !args[1] ||
             !Number.isInteger(Number(args[1])) ||
             (Number(args[1]) <= 0 && message.author.id !== '240312568273436674')
         ) {
@@ -31,11 +32,7 @@ class Pay implements Command {
 
         let amountToPay = Number(args[1]);
 
-        let payer = client.economy.getUser(message.author.id);
-        if (!payer) {
-            client.economy.createUser(message.author.id);
-            payer = client.economy.getUser(message.author.id) as EconomyUser;
-        }
+        let payer = client.economy.getOrMakeUser(message.author.id);
 
         if (payer.balance < amountToPay) {
             return EconomyManager.insufficientBalance(message, { have: payer.balance });
@@ -47,8 +44,10 @@ class Pay implements Command {
             payee = client.economy.getUser(targetedUser.id) as EconomyUser;
         }
 
-        client.economy.updateUserBalance(message.author.id, -amountToPay);
-        client.economy.updateUserBalance(targetedUser.id, amountToPay);
+        client.economy.updateUserBalance(payer, -amountToPay);
+        client.economy.updateUserBalance(payee, amountToPay);
+
+        client.economy.addUserTransaction(message.author.id, amountToPay, targetedUser.id);
 
         message.channel.send(
             `Paid ${amountToPay} Param Pupee${amountToPay != 1 ? 's' : ''} to <@${

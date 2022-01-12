@@ -1,23 +1,19 @@
 import { Message } from 'discord.js';
-import { TypedEmitter } from 'tiny-typed-emitter';
+import moment from 'moment';
 import Config from '../types/Config';
-import { EconomyUser } from '../types/Economy';
+import { EconomyUser, PupeeTransaction } from '../types/Economy';
 import DataManager from './DataManager';
 
-export interface EconomyManagerEvents {
-    backgroundValidation: (current: number, total: number) => void;
-}
-
-export default class EconomyManager extends TypedEmitter<EconomyManagerEvents> {
+export default class EconomyManager {
     private _userData: { [discordID: string]: EconomyUser };
     private _userDataManager: DataManager;
     public initialBalance: number;
     public maxTransactionsRecorded: number;
 
     public constructor({ initialBalance, maxTransactionsRecorded }: Config['economy']) {
-        super();
         this.initialBalance = initialBalance;
         this.maxTransactionsRecorded = maxTransactionsRecorded;
+
         this._userDataManager = new DataManager(
             'data/economy/users.json',
             JSON.stringify({}, undefined, 4),
@@ -26,68 +22,146 @@ export default class EconomyManager extends TypedEmitter<EconomyManagerEvents> {
         this._userData = JSON.parse(this._userDataManager.data);
     }
 
-    /** @deprecated We check that `user.transactions` exist in the `getUser` method. */
-    public async validateTransactionHistory(save: boolean = true) {
-        const objKeys = Object.keys(this._userData);
-
-        if (objKeys.filter((key) => this._userData[key].transactions === undefined).length === 0) {
-            // no validation needed;
-            this.emit('backgroundValidation', -1, -1);
-            return;
-        }
-
-        const len = objKeys.length;
-        let progress = 0;
-        for (let i = 0; i < len; i++) {
-            const id = objKeys[i];
-            if (this._userData[id].transactions === undefined) {
-                this._userData[id].transactions = [];
-                if (save) this.save();
-            }
-            progress++;
-            this.emit('backgroundValidation', progress, len);
-        }
-
-        this.emit('backgroundValidation', progress, len);
+    /** This is used for when fields are missing. */
+    private makeDefaultEconomyUser(): EconomyUser {
+        const economyUser: EconomyUser = {
+            balance: this.initialBalance,
+            transactions: [],
+            lowestEverBalance: {
+                amount: this.initialBalance,
+                achieved: Date.now(),
+            },
+            highestEverBalance: {
+                amount: this.initialBalance,
+                achieved: Date.now(),
+            },
+        };
+        return economyUser;
     }
 
     /** Gets a user if they exist, undefined otherwise. */
     public getUser(id: string): EconomyUser | undefined {
         const user = this._userData[id];
-        if (user === undefined) return undefined;
-        if (!user?.transactions) {
-            user.transactions = [];
-            this.save();
+        if (user === undefined) {
+            return;
         }
+
+        const defaultUser = this.makeDefaultEconomyUser();
+
+        let mutatedUser = false;
+        let userKeys = Object.keys(user);
+        for (const key of Object.keys(defaultUser) as (keyof EconomyUser)[]) {
+            if (!userKeys.includes(key)) {
+                mutatedUser = true;
+                user[key] = defaultUser[key] as any;
+            }
+        }
+        if (mutatedUser) this.save();
         return user;
     }
 
+    public getOrMakeUser(id: string): EconomyUser {
+        return this.createUser(id);
+    }
+
     /** Makes a user if they don't exist.
-     * @param {number?} initialBalance How many Param Pupees this user starts with, default specified in `config.json`
-     * @returns {boolean} Whether the creation was a success.
+     * @returns {EconomyUser} The user it just made, or that already existed.
      */
-    public createUser(id: string, initialBalance: number = this.initialBalance): boolean {
-        if (this._userData[id] !== undefined) return false;
-        this._userData[id] = {
-            balance: initialBalance,
-            transactions: [],
-        };
-        this.save();
-        return true;
+    public createUser(id: string): EconomyUser {
+        const existingUser = this.getUser(id);
+        if (!existingUser) {
+            const newUser = this.makeDefaultEconomyUser();
+            this._userData[id] = newUser;
+            this.save();
+            return newUser;
+        }
+        return existingUser;
     }
 
     /** Adds to the balance of a user (you can use negative numbers to take away).
      * @returns {number} The new balance of the user.
      */
-    public updateUserBalance(id: string, amountToAdd: number): number {
-        if (!this._userData[id]) this.createUser(id);
-        this._userData[id].balance += amountToAdd;
-        this.save();
-        return this._userData[id].balance;
+    public updateUserBalance(user: EconomyUser, amountToAdd: number): number {
+        user.balance += amountToAdd;
+        this.userBalanceChecks(user);
+
+        return user.balance;
     }
 
-    /** Makes a monetary transaction record for 2 users. */
-    public addUserTransaction(personA: EconomyUser, amount: number, personB: EconomyUser) {}
+    private userBalanceChecks(user: EconomyUser): void {
+        if (user.balance < user.lowestEverBalance.amount) {
+            user.lowestEverBalance = { amount: user.balance, achieved: Date.now() };
+        } else if (user.balance > user.highestEverBalance.amount) {
+            user.highestEverBalance = { amount: user.balance, achieved: Date.now() };
+        }
+        this.save();
+    }
+
+    public setUserBalance(user: EconomyUser, newBalance: number, clearData: boolean = true): void {
+        user.balance = newBalance;
+        if (clearData) {
+            user.lowestEverBalance = { amount: user.balance, achieved: Date.now() };
+            user.highestEverBalance = { amount: user.balance, achieved: Date.now() };
+            user.transactions = [];
+        } else {
+            this.userBalanceChecks(user);
+        }
+        this.save();
+    }
+
+    public transactionReport(
+        user: EconomyUser,
+        { toID, fromID, amount, timestamp }: PupeeTransaction,
+    ): string {
+        const timestampS = moment(timestamp).fromNow();
+        let output = `${timestampS[0].toUpperCase() + timestampS.slice(1)}: `;
+        const userTo = this._userData[toID];
+        if (userTo === user) {
+            // someone either paid user, or took from user
+            if (amount < 0)
+                output += `Had **${Math.abs(amount)}** Param Pupee${
+                    amount !== 1 ? 's' : ''
+                } yoinked by <@${fromID}>`;
+            else
+                output += `Received **${amount}** Param Pupee${
+                    amount !== 1 ? 's' : ''
+                } from <@${fromID}>`;
+        } else {
+            // user paid, or stole from
+            if (amount < 0)
+                output += `Stole **${Math.abs(amount)}** Param Pupee${
+                    amount !== 1 ? 's' : ''
+                } from <@${toID}>`;
+            else output += `Gave **${amount}** Param Pupee${amount !== 1 ? 's' : ''} to <@${toID}>`;
+        }
+        return output;
+    }
+
+    /** Makes a monetary transaction record for 2 users.
+     * @param {EconomyUser} personA Person who initiated the transaction.
+     * @param {EconomyUser} personB Person who accepted the transaction.
+     */
+    public addUserTransaction(personA: string, amount: number, personB: string) {
+        const transaction: PupeeTransaction = {
+            fromID: personA,
+            toID: personB,
+            amount,
+            timestamp: Date.now(),
+        };
+
+        const userA = this.getOrMakeUser(personA);
+        const userB = this.getOrMakeUser(personB);
+
+        userA.transactions = [transaction, ...userA.transactions].slice(
+            0,
+            this.maxTransactionsRecorded,
+        );
+        userB.transactions = [transaction, ...userB.transactions].slice(
+            0,
+            this.maxTransactionsRecorded,
+        );
+        this.save();
+    }
 
     private async save() {
         this._userDataManager.data = JSON.stringify(this._userData, undefined, 4);

@@ -1,10 +1,21 @@
 export interface EconomyUser {
     balance: number;
     transactions: PupeeTransaction[];
+    lowestEverBalance: {
+        amount: number;
+        achieved: number;
+    };
+    highestEverBalance: {
+        amount: number;
+        achieved: number;
+    };
 }
 
 export interface PupeeTransaction {
-    from: EconomyUser;
+    /** The user ID of the giver. */
+    fromID: string;
     amount: number;
-    to: EconomyUser;
+    /** The user ID of the receiver. */
+    toID: string;
+    timestamp: number;
 }

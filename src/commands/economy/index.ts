@@ -1,4 +1,4 @@
-import balance from './balance';
+import { balance } from './balance';
 import list from './list';
 import pay from './pay';
 import portfolio from './portfolio';
