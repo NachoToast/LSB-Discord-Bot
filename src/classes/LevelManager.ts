@@ -180,6 +180,11 @@ export default class LevelManager {
             guildConfig.levelUpChannel,
         );
         if (channel === null || channel.type !== 'GUILD_TEXT') return;
-        channel.send(`<@${member.id}> is now level **${newLevel}!**`);
+
+        try {
+            channel.send(`<@${member.id}> is now level **${newLevel}!**`);
+        } catch (error) {
+            // sometimes we just cant send a message, and thats ok 🥰
+        }
     }
 }
