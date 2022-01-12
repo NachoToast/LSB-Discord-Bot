@@ -1,4 +1,10 @@
 export interface EconomyUser {
     balance: number;
-    transactions?: [];
+    transactions?: PupeeTransaction[];
+}
+
+export interface PupeeTransaction {
+    from: EconomyUser;
+    amount: number;
+    to: EconomyUser;
 }
