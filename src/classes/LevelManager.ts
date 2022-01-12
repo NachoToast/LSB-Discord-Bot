@@ -76,7 +76,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
         for (let i = 0; i < len; i++) {
             const id = objKeys[i];
             await this.validateUser(id, guildMembers, save);
-            progress += 1;
+            progress++;
             this.validationProgress = Math.floor((100 * i) / len);
             this.emit('backgroundValidation', progress, len);
         }

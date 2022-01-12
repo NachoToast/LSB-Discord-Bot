@@ -1,13 +1,19 @@
 import { Message } from 'discord.js';
+import { TypedEmitter } from 'tiny-typed-emitter';
 import { EconomyUser } from '../types/Economy';
 import DataManager from './DataManager';
 
-export default class EconomyManager {
+export interface EconomyManagerEvents {
+    backgroundValidation: (current: number, total: number) => void;
+}
+
+export default class EconomyManager extends TypedEmitter<EconomyManagerEvents> {
     private _userData: { [discordID: string]: EconomyUser };
     private _userDataManager: DataManager;
     public initialBalance: number;
 
     public constructor(initialBalance: number) {
+        super();
         this.initialBalance = initialBalance;
         this._userDataManager = new DataManager(
             'data/economy/users.json',
@@ -17,9 +23,42 @@ export default class EconomyManager {
         this._userData = JSON.parse(this._userDataManager.data);
     }
 
+    public async validateTransactionHistory(save: boolean = true) {
+        const objKeys = Object.keys(this._userData);
+
+        if (objKeys.filter((key) => this._userData[key].transactions === undefined).length === 0) {
+            // no validation needed;
+            this.emit('backgroundValidation', -1, -1);
+            return;
+        }
+
+        const len = objKeys.length;
+        let progress = 0;
+        for (let i = 0; i < len; i++) {
+            const id = objKeys[i];
+            if (this._userData[id].transactions === undefined) {
+                this._userData[id].transactions = [];
+                if (save) this.save();
+                await new Promise<void>((resolve) => {
+                    setTimeout(() => resolve(), 1000);
+                });
+            }
+            progress++;
+            this.emit('backgroundValidation', progress, len);
+        }
+
+        this.emit('backgroundValidation', progress, len);
+    }
+
     /** Gets a user if they exist, undefined otherwise. */
     public getUser(id: string): EconomyUser | undefined {
-        return this._userData[id];
+        const user = this._userData[id];
+        if (user === undefined) return undefined;
+        if (!user?.transactions) {
+            user.transactions = [];
+            this.save();
+        }
+        return user;
     }
 
     /** Makes a user if they don't exist.

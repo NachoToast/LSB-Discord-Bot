@@ -9,6 +9,7 @@ import commands from '../commands';
 import LevelManager from '../classes/LevelManager';
 import GuildConfigManager from '../classes/GuildConfigManager';
 import { EventEmitter } from 'stream';
+import Logger from '../classes/Logger';
 
 class Client extends DiscordClient {
     public readonly devMode: boolean = process.argv.slice(2).includes('--devmode');
@@ -29,6 +30,7 @@ class Client extends DiscordClient {
     public static readonly filterChannel = (channelTag: string): string =>
         channelTag.replaceAll(Client.decorators, '');
 
+    private readonly logger = new Logger();
     public readonly economy: EconomyManager;
     public readonly levels = new LevelManager(this);
     public readonly guildConfig = new GuildConfigManager();
@@ -132,25 +134,40 @@ class Client extends DiscordClient {
 
         const logBackgroundValidationProgress = (current: number, total: number) => {
             if (current === -1 && total === -1) {
-                process.stdout.write(
-                    `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Skipped${Colours.Reset}\n`,
+                // process.stdout.write(
+                //     `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Skipped${Colours.Reset}\n`,
+                // );
+                this.logger.log(
+                    'levelManager',
+                    `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Skipped${Colours.Reset}`,
                 );
 
                 this.levels.off('backgroundValidation', logBackgroundValidationProgress);
             } else if (current === total) {
-                process.stdout.clearLine(-1);
-                process.stdout.cursorTo(0);
-                process.stdout.write(
-                    `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Complete!${Colours.Reset}\n`,
+                // process.stdout.clearLine(-1);
+                // process.stdout.cursorTo(0);
+                // process.stdout.write(
+                //     `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Complete!${Colours.Reset}\n`,
+                // );
+                this.logger.log(
+                    'levelManager',
+                    `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Complete!${Colours.Reset}`,
                 );
                 this.levels.off('backgroundValidation', logBackgroundValidationProgress);
             } else {
                 const percentage = Math.floor((100 * current) / total);
-                const max = total.toString().length;
 
-                process.stdout.clearLine(-1);
-                process.stdout.cursorTo(0);
-                process.stdout.write(
+                // process.stdout.clearLine(-1);
+                // process.stdout.cursorTo(0);
+                // process.stdout.write(
+                //     `[${Colours.FgCyan}LevelManager${
+                //         Colours.Reset
+                //     }] Background User Validation [${Client.progressBar(
+                //         percentage,
+                //     )}] ${Client.fixedWidthNumber(percentage)}%`,
+                // );
+                this.logger.log(
+                    `levelManager`,
                     `[${Colours.FgCyan}LevelManager${
                         Colours.Reset
                     }] Background User Validation [${Client.progressBar(
@@ -160,9 +177,56 @@ class Client extends DiscordClient {
             }
         };
 
+        const logEconomyValidationProgress = (current: number, total: number) => {
+            if (current === -1 && total === -1) {
+                // process.stdout.write(
+                //     `[${Colours.FgMagenta}EconomyManager${Colours.Reset}] ${Colours.FgGreen}Background Transaction Validation Skipped${Colours.Reset}\n`,
+                // );
+                this.logger.log(
+                    'economyManager',
+                    `[${Colours.FgMagenta}EconomyManager${Colours.Reset}] ${Colours.FgGreen}Background Transaction Validation Skipped${Colours.Reset}`,
+                );
+
+                this.economy.off('backgroundValidation', logEconomyValidationProgress);
+            } else if (current === total) {
+                // process.stdout.clearLine(0);
+                // process.stdout.cursorTo(0);
+                // process.stdout.write(
+                //     `[${Colours.FgMagenta}EconomyManager${Colours.Reset}] ${Colours.FgGreen}Background Transaction Validation Complete!${Colours.Reset}\n`,
+                // );
+                this.logger.log(
+                    'economyManager',
+                    `[${Colours.FgMagenta}EconomyManager${Colours.Reset}] ${Colours.FgGreen}Background Transaction Validation Complete!${Colours.Reset}`,
+                );
+                this.economy.off('backgroundValidation', logEconomyValidationProgress);
+            } else {
+                const percentage = Math.floor((100 * current) / total);
+
+                // process.stdout.clearLine(0);
+                // process.stdout.cursorTo(0);
+                // process.stdout.write(
+                //     `[${Colours.FgMagenta}EconomyManager${
+                //         Colours.Reset
+                //     }] Background Transaction Validation [${Client.progressBar(
+                //         percentage,
+                //     )}] ${Client.fixedWidthNumber(percentage)}%`,
+                // );
+                this.logger.log(
+                    'economyManager',
+                    `[${Colours.FgMagenta}EconomyManager${
+                        Colours.Reset
+                    }] Background Transaction Validation [${Client.progressBar(
+                        percentage,
+                    )}] ${Client.fixedWidthNumber(percentage)}%`,
+                );
+            }
+        };
+
         this.levels.on('backgroundValidation', logBackgroundValidationProgress);
+        this.economy.on('backgroundValidation', logEconomyValidationProgress);
 
         this.levels.validateAllUsersInBackground(false);
+        this.economy.validateTransactionHistory(false);
     }
 
     private static fixedWidthNumber(num: number, maxWidth: number = 3): string {
