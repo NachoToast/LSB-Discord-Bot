@@ -30,6 +30,7 @@ export default class EconomyManager {
         if (this._userData[id] !== undefined) return false;
         this._userData[id] = {
             balance: initialBalance,
+            transactions: [],
         };
         this.save();
         return true;

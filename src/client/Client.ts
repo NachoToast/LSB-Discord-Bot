@@ -130,7 +130,48 @@ class Client extends DiscordClient {
             url: 'https://www.twitch.tv/xqcow',
         });
 
-        await this.levels.validateAllUsersInBackground();
+        const logBackgroundValidationProgress = (current: number, total: number) => {
+            if (current === -1 && total === -1) {
+                process.stdout.write(
+                    `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Skipped${Colours.Reset}\n`,
+                );
+
+                this.levels.off('backgroundValidation', logBackgroundValidationProgress);
+            } else if (current === total) {
+                process.stdout.clearLine(-1);
+                process.stdout.cursorTo(0);
+                process.stdout.write(
+                    `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Complete!${Colours.Reset}\n`,
+                );
+                this.levels.off('backgroundValidation', logBackgroundValidationProgress);
+            } else {
+                const percentage = Math.floor((100 * current) / total);
+                const max = total.toString().length;
+
+                process.stdout.clearLine(-1);
+                process.stdout.cursorTo(0);
+                process.stdout.write(
+                    `[${Colours.FgCyan}LevelManager${
+                        Colours.Reset
+                    }] Background User Validation [${Client.progressBar(
+                        percentage,
+                    )}] ${Client.fixedWidthNumber(percentage)}%`,
+                );
+            }
+        };
+
+        this.levels.on('backgroundValidation', logBackgroundValidationProgress);
+
+        this.levels.validateAllUsersInBackground(false);
+    }
+
+    private static fixedWidthNumber(num: number, maxWidth: number = 3): string {
+        return ' '.repeat(maxWidth - num.toString().length) + num;
+    }
+
+    private static progressBar(percentage: number, length: number = 30): string {
+        const amountFilled = Math.floor(length * (percentage / 100));
+        return '■'.repeat(amountFilled) + ' '.repeat(length - amountFilled);
     }
 
     private async onError(error: Error) {

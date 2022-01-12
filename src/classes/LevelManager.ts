@@ -14,14 +14,20 @@ import Colours from '../types/Colours';
 import { LevelUpThresholds } from '../types/GuildConfig';
 import { FullLevelUser, LevelUser } from '../types/UserModels';
 import DataManager from './DataManager';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
-export default class LevelManager {
+export interface LevelManagerEvents {
+    backgroundValidation: (current: number, total: number) => void;
+}
+
+export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
     private _client: Client;
     private _levelData: { [discordID: string]: LevelUser };
     private _spamLockData: { [discordID: string]: true } = {};
     private _levelDataManager: DataManager;
 
     public constructor(client: Client) {
+        super();
         this._client = client;
 
         const startingData: { [index: string]: LevelUser } = {};
@@ -48,41 +54,18 @@ export default class LevelManager {
     }
 
     public validationProgress: number = 0;
-    public async validateAllUsersInBackground() {
+    public async validateAllUsersInBackground(save: boolean = true) {
         const objKeys = Object.keys(this._levelData);
 
         if (objKeys.filter((key) => this._levelData[key].leftServer === undefined).length === 0) {
             // no validation needed
             this.validationProgress = 100;
-            process.stdout.write(
-                `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Skipped${Colours.Reset}\n`,
-            );
+            this.emit('backgroundValidation', -1, -1);
             return;
         }
 
         const len = objKeys.length;
         let progress = 0;
-
-        const calculatePercentageProgress = (): string => {
-            const rawPercentage = (100 * progress) / len;
-            const fixedPercentage = Math.floor(rawPercentage).toString();
-            return ' '.repeat(3 - fixedPercentage.length) + fixedPercentage;
-        };
-
-        const makeProgressBar = (length: number = 30): string => {
-            const rawDecimal = Math.floor((length * progress) / len);
-            return '■'.repeat(rawDecimal) + ' '.repeat(length - rawDecimal);
-        };
-
-        function makeBaseMessage(): void {
-            process.stdout.clearLine(-1);
-            process.stdout.cursorTo(0);
-            process.stdout.write(
-                `[${Colours.FgCyan}LevelManager${
-                    Colours.Reset
-                }] Background User Validation [${makeProgressBar()}] ${calculatePercentageProgress()}%`,
-            );
-        }
 
         const allGuilds = await this._client.guilds.fetch();
         if (allGuilds.size === 0) return;
@@ -92,25 +75,24 @@ export default class LevelManager {
 
         for (let i = 0; i < len; i++) {
             const id = objKeys[i];
-            await this.validateUser(id, guildMembers);
+            await this.validateUser(id, guildMembers, save);
             progress += 1;
             this.validationProgress = Math.floor((100 * i) / len);
-
-            makeBaseMessage();
+            this.emit('backgroundValidation', progress, len);
         }
 
-        process.stdout.clearLine(-1);
-        process.stdout.cursorTo(0);
-        process.stdout.write(
-            `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Complete!${Colours.Reset}\n`,
-        );
+        this.emit('backgroundValidation', progress, len);
         this.validationProgress = 100;
     }
 
     /** Makes sure the user is in the server.
      * @returns {boolean} Whether the user is valid for ranking.
      */
-    private async validateUser(id: string, guildMembers: GuildMemberManager): Promise<boolean> {
+    private async validateUser(
+        id: string,
+        guildMembers: GuildMemberManager,
+        save: boolean = true,
+    ): Promise<boolean> {
         if (this._levelData[id]?.leftServer !== undefined) {
             return !this._levelData[id].leftServer;
         }
@@ -123,7 +105,7 @@ export default class LevelManager {
             } else {
                 this._levelData[id] = { xp: 0, level: 0, leftServer: false };
             }
-            this.save();
+            if (save) this.save();
             return true;
         } catch (error) {
             if (!(error instanceof DiscordAPIError) || error.message !== 'Unknown Member') {
@@ -134,7 +116,7 @@ export default class LevelManager {
                 } else {
                     this._levelData[id] = { xp: 0, level: 0, leftServer: true };
                 }
-                this.save();
+                if (save) this.save();
             }
             return false;
         }
