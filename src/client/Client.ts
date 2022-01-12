@@ -134,38 +134,23 @@ class Client extends DiscordClient {
 
         const logBackgroundValidationProgress = (current: number, total: number) => {
             if (current === -1 && total === -1) {
-                // process.stdout.write(
-                //     `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Skipped${Colours.Reset}\n`,
-                // );
                 this.logger.log(
                     'levelManager',
                     `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Skipped${Colours.Reset}`,
                 );
 
                 this.levels.off('backgroundValidation', logBackgroundValidationProgress);
+                this.logger.remove('backgroundValidation');
             } else if (current === total) {
-                // process.stdout.clearLine(-1);
-                // process.stdout.cursorTo(0);
-                // process.stdout.write(
-                //     `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Complete!${Colours.Reset}\n`,
-                // );
                 this.logger.log(
                     'levelManager',
                     `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Complete!${Colours.Reset}`,
                 );
                 this.levels.off('backgroundValidation', logBackgroundValidationProgress);
+                this.logger.remove('backgroundValidation');
             } else {
                 const percentage = Math.floor((100 * current) / total);
 
-                // process.stdout.clearLine(-1);
-                // process.stdout.cursorTo(0);
-                // process.stdout.write(
-                //     `[${Colours.FgCyan}LevelManager${
-                //         Colours.Reset
-                //     }] Background User Validation [${Client.progressBar(
-                //         percentage,
-                //     )}] ${Client.fixedWidthNumber(percentage)}%`,
-                // );
                 this.logger.log(
                     `levelManager`,
                     `[${Colours.FgCyan}LevelManager${
@@ -179,38 +164,23 @@ class Client extends DiscordClient {
 
         const logEconomyValidationProgress = (current: number, total: number) => {
             if (current === -1 && total === -1) {
-                // process.stdout.write(
-                //     `[${Colours.FgMagenta}EconomyManager${Colours.Reset}] ${Colours.FgGreen}Background Transaction Validation Skipped${Colours.Reset}\n`,
-                // );
                 this.logger.log(
                     'economyManager',
                     `[${Colours.FgMagenta}EconomyManager${Colours.Reset}] ${Colours.FgGreen}Background Transaction Validation Skipped${Colours.Reset}`,
                 );
 
                 this.economy.off('backgroundValidation', logEconomyValidationProgress);
+                this.logger.remove('economyManager');
             } else if (current === total) {
-                // process.stdout.clearLine(0);
-                // process.stdout.cursorTo(0);
-                // process.stdout.write(
-                //     `[${Colours.FgMagenta}EconomyManager${Colours.Reset}] ${Colours.FgGreen}Background Transaction Validation Complete!${Colours.Reset}\n`,
-                // );
                 this.logger.log(
                     'economyManager',
                     `[${Colours.FgMagenta}EconomyManager${Colours.Reset}] ${Colours.FgGreen}Background Transaction Validation Complete!${Colours.Reset}`,
                 );
                 this.economy.off('backgroundValidation', logEconomyValidationProgress);
+                this.logger.remove('economyManager');
             } else {
                 const percentage = Math.floor((100 * current) / total);
 
-                // process.stdout.clearLine(0);
-                // process.stdout.cursorTo(0);
-                // process.stdout.write(
-                //     `[${Colours.FgMagenta}EconomyManager${
-                //         Colours.Reset
-                //     }] Background Transaction Validation [${Client.progressBar(
-                //         percentage,
-                //     )}] ${Client.fixedWidthNumber(percentage)}%`,
-                // );
                 this.logger.log(
                     'economyManager',
                     `[${Colours.FgMagenta}EconomyManager${

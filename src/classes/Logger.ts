@@ -18,4 +18,8 @@ export default class Logger {
             process.stdout.write(this._logMap[key] + '\n');
         }
     }
+
+    public remove(key: string) {
+        delete this._logMap[key];
+    }
 }

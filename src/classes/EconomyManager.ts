@@ -39,9 +39,6 @@ export default class EconomyManager extends TypedEmitter<EconomyManagerEvents> {
             if (this._userData[id].transactions === undefined) {
                 this._userData[id].transactions = [];
                 if (save) this.save();
-                await new Promise<void>((resolve) => {
-                    setTimeout(() => resolve(), 1000);
-                });
             }
             progress++;
             this.emit('backgroundValidation', progress, len);
