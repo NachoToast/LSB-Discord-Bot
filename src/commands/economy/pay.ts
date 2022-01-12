@@ -1,7 +1,7 @@
 import EconomyManager from '../../classes/EconomyManager';
 import Client from '../../client/Client';
 import Command, { CommandParams } from '../../client/Command';
-import { EconomyUser } from '../../types/UserModels';
+import { EconomyUser } from '../../types/Economy';
 
 class Pay implements Command {
     public readonly name: string = 'pay';

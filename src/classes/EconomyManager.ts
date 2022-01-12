@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import { EconomyUser } from '../types/UserModels';
+import { EconomyUser } from '../types/Economy';
 import DataManager from './DataManager';
 
 export default class EconomyManager {
