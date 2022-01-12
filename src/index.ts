@@ -1,15 +1,17 @@
 import { ActivityTypes } from 'discord.js/typings/enums';
 import Client from './client/Client';
 import { CommandParams } from './client/Command';
+import Colours from './types/Colours';
 
 const startTime = Date.now();
 const client = new Client();
 
 client.on('ready', () => {
     console.log(
-        `${client.user?.tag} logged in (\x1b[35m${(Date.now() - startTime) / 1000}s\x1b[0m)`,
+        `${client.user?.tag} logged in (${Colours.FgMagenta}${(Date.now() - startTime) / 1000}s${
+            Colours.Reset
+        })`,
     );
-    console.log(`Loaded ${client.commands.size} commands (${client.aliases.size} aliases)`);
 });
 
 client.on('error', (error) => {

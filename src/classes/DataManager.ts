@@ -1,54 +1,41 @@
 import fs from 'fs';
-import User from '../models/User';
 
-export class DataManager {
-    private _userData: { [discordID: string]: User };
+/** DataManager manages data thats stored and retrieved from a file. */
+export default class DataManager {
+    private _fileName: string;
+    private _encoding: BufferEncoding;
 
-    public constructor() {
-        // getting the data/users.json file contents
-        try {
-            this._userData = JSON.parse(fs.readFileSync(`data/users.json`, 'utf-8'));
-        } catch (error: any) {
-            if (error?.code !== 'ENOENT') {
-                console.log(error);
-                process.exit();
-            }
-            try {
-                fs.mkdirSync('data');
-                fs.writeFileSync('data/users.json', JSON.stringify({}, null, 4));
-            } catch (error: any) {
-                if (error?.code !== 'EEXIST') {
-                    console.log(error);
-                    process.exit();
+    /** @param {string} fileName Path to file from root directory, e.g. `data/users/NachoToast.json` */
+    public constructor(
+        fileName: string,
+        initialContent: string,
+        encoding: BufferEncoding = 'utf-8',
+    ) {
+        this._fileName = fileName;
+        this._encoding = encoding;
+
+        // make the file and parent folders if non-existent
+        if (!fs.existsSync(fileName)) {
+            const folders = fileName.split('/');
+            let currentNavigation = '';
+            for (const folder of folders) {
+                currentNavigation += `${folder}/`;
+                if (fs.existsSync(currentNavigation)) continue;
+                if (folder.includes('.')) {
+                    fs.writeFileSync(fileName, initialContent, encoding);
+                    break;
+                } else {
+                    fs.mkdirSync(currentNavigation);
                 }
-                fs.writeFileSync('data/users.json', JSON.stringify({}, null, 4));
             }
-            this._userData = {};
         }
     }
 
-    public getUser(id: string): User | undefined {
-        return this._userData[id];
-    }
-    public createUser(id: string, balance: number): boolean {
-        if (this._userData[id] !== undefined) return false;
-        this._userData[id] = {
-            balance,
-            registered: Date.now(),
-        };
-        this.save();
-        return true;
-    }
-    public updateUserBalance(id: string, amountToAdd: number): false | number {
-        if (this._userData[id] === undefined) return false;
-        this._userData[id].balance += amountToAdd;
-        this.save();
-        return this._userData[id].balance;
+    public get data(): string {
+        return fs.readFileSync(this._fileName, this._encoding);
     }
 
-    private async save() {
-        fs.writeFileSync(`data/users.json`, JSON.stringify(this._userData, null, 4));
+    public set data(data: string) {
+        fs.writeFileSync(this._fileName, data, this._encoding);
     }
 }
-
-export default new DataManager();

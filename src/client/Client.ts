@@ -1,19 +1,13 @@
-import { Client as DiscordClient, Collection, GuildMember } from 'discord.js';
+import { Client as DiscordClient, Collection, GuildMember, Message } from 'discord.js';
 import Command from './Command';
 import intents from './Intents';
-import fs from 'fs';
-import path from 'path';
-import dataManager, { DataManager } from '../classes/DataManager';
-
-interface Config {
-    prefixes: string[];
-    initialBalance: number;
-}
-
-interface Auth {
-    token: string;
-    devToken?: string;
-}
+import Config from '../types/Config';
+import Auth from '../types/Auth';
+import Colours, { colourCycle } from '../types/Colours';
+import EconomyManager from '../classes/EconomyManager';
+import commands from '../commands';
+import LevelManager from '../classes/LevelManager';
+import GuildConfigManager from '../classes/GuildConfigManager';
 
 class Client extends DiscordClient {
     public readonly devMode: boolean = process.argv.slice(2).includes('--devmode');
@@ -22,14 +16,26 @@ class Client extends DiscordClient {
     public readonly commands: Collection<string, Command> = new Collection();
     public readonly aliases: Map<string, Command> = new Map();
     public readonly prefixes: string[];
-    public readonly initialBalance: number;
+    // public readonly initialBalance: number;
 
     private static readonly tagsEveryone = new RegExp(/@everyone/);
     private static readonly tagsHere = new RegExp(/@here/);
     private static readonly tagsRole = new RegExp(/<@&[0-9]{17,18}>/);
     private static readonly tagsUser = new RegExp(/<@!?[0-9]{17,18}>/);
 
-    public readonly dataManager: DataManager = dataManager;
+    public static readonly tagsChannel = new RegExp(/<#[0-9]{17,18}>/);
+    private static readonly decorators = new RegExp(/[<#!&>]/g);
+    public static readonly filterChannel = (channelTag: string): string =>
+        channelTag.replaceAll(Client.decorators, '');
+
+    public readonly economy: EconomyManager;
+    public readonly levels = new LevelManager(this);
+    public readonly guildConfig = new GuildConfigManager();
+
+    /** @deprecated Use `client.economy.initialBalance` instead. */
+    public get initialBalance(): number {
+        return this.economy.initialBalance;
+    }
 
     public constructor() {
         super({ intents });
@@ -38,69 +44,63 @@ class Client extends DiscordClient {
         try {
             const config: Config = require('../../config.json');
             this.prefixes = config.prefixes;
-            this.initialBalance = config.initialBalance;
+            this.economy = new EconomyManager(config.initialBalance);
             const auth: Auth = require('../../auth.json');
             if (this.devMode && !auth.devToken) {
                 console.log(
-                    'Running in devmode with no auth token, add a \x1b[36mdevToken\x1b[0m field to the \x1b[35mauth.json\x1b[0m file.',
+                    `Running in devmode with no auth token, add a ${Colours.FgCyan}devToken${Colours.Reset} field to the ${Colours.FgMagenta}auth.json${Colours.Reset} file.`,
                 );
                 process.exit();
             }
             this.token = this.devMode ? auth.devToken! : auth.token;
         } catch (error) {
-            let handled = false;
             if (error instanceof Error) {
                 if (error.message.includes('config.json')) {
-                    console.log(`Missing \x1b[35mconfig.json\x1b[0m file in root directory`);
-                    handled = true;
+                    console.log(
+                        `Missing ${Colours.FgMagenta}config.json${Colours.Reset} file in root directory`,
+                    );
                 } else if (error.message.includes('auth.json')) {
-                    console.log(`Missing \x1b[35mauth.json\x1b[0m file in root directory`);
-                    handled = true;
+                    console.log(
+                        `Missing ${Colours.FgMagenta}auth.json${Colours.Reset} file in root directory`,
+                    );
+                } else {
+                    console.log(`Unknown error occurred loading config and auth files`);
+                    console.log(error);
                 }
-            }
-            if (!handled) {
-                console.log(`Unknown error occurred loading config and auth files`);
-                console.log(error);
             }
             process.exit();
         }
 
         // loading commands
         try {
-            process.stdout.write('Loading Commands: '); // use stdout because console appends newline
-            let fgC = 0; // foreground colour
+            process.stdout.write(`Loading ${commands.length} Commands: `); // use stdout because console appends newline
 
             let duplicateCommandsMessage: string[] = [];
+            const colourCycler = colourCycle();
 
-            let commandPath = path.join(__dirname, '../', 'commands');
+            commands.map((command) => {
+                this.commands.set(command.name, command);
 
-            fs.readdirSync(commandPath)
-                .filter((file) => file.endsWith('.ts') || file.endsWith('.js'))
-                .map((file) => {
-                    const command: Command = require(path.join(commandPath, file)).default;
+                const colour = colourCycler.next().value;
 
-                    this.commands.set(command.name, command);
+                process.stdout.write(`${colour}${command.name}${Colours.Reset}, `);
 
-                    if (command?.aliases?.length) {
-                        for (const alias of command.aliases) {
-                            if (this.aliases.get(alias) !== undefined) {
-                                duplicateCommandsMessage.push(
-                                    `Alias \x1b[1m${alias}\x1b[0m of the \x1b[${31 + (fgC % 6)}m${
-                                        command.name
-                                    }\x1b[0m command is already in use by the \x1b[1m${
-                                        this.aliases.get(alias)?.name
-                                    }\x1b[0m command`,
-                                );
-                                continue;
-                            }
+                if (command.aliases?.length) {
+                    for (const alias of command.aliases) {
+                        if (this.aliases.get(alias) !== undefined) {
+                            duplicateCommandsMessage.push(
+                                `Alias ${Colours.Bright}${alias}${Colours.Reset} of the ${colour}${
+                                    command.name
+                                }${Colours.Reset} command is already in use by the ${
+                                    Colours.Bright
+                                }${this.aliases.get(alias)?.name}${Colours.Reset} command`,
+                            );
+                        } else {
                             this.aliases.set(alias, command);
                         }
                     }
-
-                    process.stdout.write(`\x1b[${31 + (fgC % 6)}m${command.name}\x1b[0m, `);
-
-                    fgC++;
-                });
+                }
+            });
 
             process.stdout.write('\n');
             if (duplicateCommandsMessage.length) {
@@ -122,6 +122,45 @@ class Client extends DiscordClient {
             newMessage = newMessage.replace(this.tagsUser, 'user');
         }
         return newMessage;
+    }
+
+    public static async getTargetUser(
+        message: Message,
+        args: string[],
+        allowBots: boolean = false,
+    ): Promise<GuildMember | null> {
+        if (!args.length || !this.tagsUser.test(args[0])) return message.member;
+        const member =
+            (await message.guild?.members?.fetch(args[0].replace(/[<@!>]/g, ''))) ?? null;
+        if (allowBots) return member;
+        if (member?.user.bot) return null;
+        return member;
+    }
+
+    public static async horribleError(message: Message, args: string[], extraInfo?: string[]) {
+        let msg = `⚠️ Something terribly wrong happened, you should never see this error.`;
+
+        const nachoToast: GuildMember | null =
+            (await message.guild?.members.fetch('240312568273436674')) ?? null;
+        if (!nachoToast) {
+            msg += `\nPlease contact NachoToast`;
+        } else {
+            const dmChannel = await nachoToast.createDM();
+            dmChannel.sendTyping();
+            const errorInfo: string[] = [
+                `**Args:** \`${args.join('`, `')}\``,
+                `**Author:** ${message.author.username} (${message.author.id})`,
+            ];
+            if (message.guild) {
+                errorInfo.push(`**Guild:** ${message.guild?.name} (${message.guildId})`);
+            }
+            if (extraInfo) {
+                errorInfo.push(...extraInfo);
+            }
+            dmChannel.send(`Big Error Occurred\n${errorInfo.join('\n')}`);
+        }
+
+        message.channel.send(msg);
     }
 }
 
