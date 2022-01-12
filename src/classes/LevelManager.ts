@@ -1,6 +1,4 @@
 import { AnyChannel, GuildMember, Message, TextChannel } from 'discord.js';
-import { ChannelTypes } from 'discord.js/typings/enums';
-import Mee6Player from '../archive/Mee6Player';
 import Client from '../client/Client';
 import { LevelUpThresholds } from '../models/GuildConfig';
 import { FullLevelUser, LevelUser } from '../models/UserModels';
@@ -16,16 +14,6 @@ export default class LevelManager {
         this._client = client;
 
         const startingData: { [index: string]: LevelUser } = {};
-
-        try {
-            const legacyData: Mee6Player[] = require('../archive/mee6.json');
-
-            for (const { id, level, xp } of legacyData) {
-                startingData[id] = { level, xp };
-            }
-        } catch (error) {
-            console.log(`Error loading legacy data (you can safely ignore this 😄 )`);
-        }
 
         this._levelDataManager = new DataManager(
             'data/levels/users.json',
