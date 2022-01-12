@@ -12,6 +12,11 @@ client.on('ready', () => {
             Colours.Reset
         })`,
     );
+
+    client.user?.setActivity(`Masterchef`, {
+        type: 'STREAMING',
+        url: 'https://www.twitch.tv/xqcow',
+    });
 });
 
 client.on('error', (error) => {
