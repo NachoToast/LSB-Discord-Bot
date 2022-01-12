@@ -24,7 +24,7 @@ export default class LevelManager {
                 startingData[id] = { level, xp };
             }
         } catch (error) {
-            console.log(`Error loading legacy data`);
+            console.log(`Error loading legacy data (you can safely ignore this 😄 )`);
         }
 
         this._levelDataManager = new DataManager(
