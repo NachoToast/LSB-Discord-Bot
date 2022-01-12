@@ -195,8 +195,8 @@ class Client extends DiscordClient {
         this.levels.on('backgroundValidation', logBackgroundValidationProgress);
         this.economy.on('backgroundValidation', logEconomyValidationProgress);
 
-        this.levels.validateAllUsersInBackground(false);
-        this.economy.validateTransactionHistory(false);
+        this.levels.validateAllUsersInBackground();
+        this.economy.validateTransactionHistory();
     }
 
     private static fixedWidthNumber(num: number, maxWidth: number = 3): string {
