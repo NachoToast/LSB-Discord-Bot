@@ -9,7 +9,7 @@ class Ping implements Command {
         message.channel.send(
             `Pongers!\nMy latency: ${Math.abs(
                 Date.now() - message.createdTimestamp,
-            )}ms\nAPI Latency: ${Math.round(client.ws.ping)}`,
+            )}ms\nAPI Latency: ${Math.round(client.ws.ping)}ms`,
         );
     }
 }
