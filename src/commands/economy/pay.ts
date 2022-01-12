@@ -47,21 +47,14 @@ class Pay implements Command {
             payee = client.economy.getUser(targetedUser.id) as EconomyUser;
         }
 
-        const payeeNewBalance = client.economy.updateUserBalance(message.author.id, -amountToPay);
-        const payerNewBalance = client.economy.updateUserBalance(targetedUser.id, amountToPay);
+        client.economy.updateUserBalance(message.author.id, -amountToPay);
+        client.economy.updateUserBalance(targetedUser.id, amountToPay);
 
-        if (payerNewBalance === false || payeeNewBalance === false) {
-            Client.horribleError(message, args, [
-                `**Command:** \`pay\``,
-                `**Message:** Attempted transaction of ${amountToPay} Param Pupees from <@${message.author.id}> to <@${targetedUser.id}> failed as one of the users didn't exist in the economy data manager.`,
-            ]);
-        } else {
-            message.channel.send(
-                `Paid ${amountToPay} Param Pupee${amountToPay != 1 ? 's' : ''} to <@${
-                    targetedUser.id
-                }>`,
-            );
-        }
+        message.channel.send(
+            `Paid ${amountToPay} Param Pupee${amountToPay != 1 ? 's' : ''} to <@${
+                targetedUser.id
+            }>`,
+        );
     }
 }
 

@@ -36,10 +36,10 @@ export default class EconomyManager {
     }
 
     /** Adds to the balance of a user (you can use negative numbers to take away).
-     * @returns {false | number} The new balance of the user, or `false` if they did not exist.
+     * @returns {number} The new balance of the user.
      */
-    public updateUserBalance(id: string, amountToAdd: number): false | number {
-        if (this._userData[id] === undefined) return false;
+    public updateUserBalance(id: string, amountToAdd: number): number {
+        if (this._userData[id] === undefined) this.createUser(id);
         this._userData[id].balance += amountToAdd;
         this.save();
         return this._userData[id].balance;
