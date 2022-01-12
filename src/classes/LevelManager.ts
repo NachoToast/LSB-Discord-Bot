@@ -1,4 +1,4 @@
-import { AnyChannel, GuildMember, Message, TextChannel } from 'discord.js';
+import { AnyChannel, GuildMember, Message, TextChannel, User } from 'discord.js';
 import Client from '../client/Client';
 import { LevelUpThresholds } from '../models/GuildConfig';
 import { FullLevelUser, LevelUser } from '../models/UserModels';
@@ -133,7 +133,33 @@ export default class LevelManager {
         return topX;
     }
 
+    private async messageAryan(member: GuildMember, newLevel: number): Promise<any> {
+        try {
+            if (
+                newLevel !== 2 &&
+                newLevel !== 5 &&
+                newLevel !== 10 &&
+                newLevel !== 20 &&
+                newLevel !== 25 &&
+                newLevel !== 35 &&
+                !this._client.devMode
+            ) {
+                return;
+            }
+
+            const aryan: User = await this._client.users.fetch(
+                this._client.devMode ? `240312568273436674` : '342562027539136513',
+            );
+            const dmChannel = await aryan.createDM();
+
+            dmChannel.send(`Yoza, <@${member.id}> just went up to level ${newLevel}`);
+        } catch (error) {
+            // lmao
+        }
+    }
+
     public async handleLevelUpMessage(member: GuildMember, newLevel: number): Promise<void> {
+        this.messageAryan(member, newLevel);
         const guildConfig = this._client.guildConfig.getGuildConfig(member.guild.id);
         if (!guildConfig || !guildConfig.levelUpChannel) return;
 
