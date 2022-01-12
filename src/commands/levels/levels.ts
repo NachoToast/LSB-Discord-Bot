@@ -16,7 +16,7 @@ class Levels implements Command {
             return;
         }
 
-        const top10 = await client.levels.getUserRanking(message.guild!);
+        const top10 = await client.levels.getUserRanking(message.guild!.members);
 
         const messageEmbed = new MessageEmbed()
             .setColor('LUMINOUS_VIVID_PINK')

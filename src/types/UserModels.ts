@@ -1,7 +1,7 @@
 export interface LevelUser {
     xp: number;
     level: number;
-    leftServer?: boolean;
+    leftServer: boolean;
 }
 
 export interface FullLevelUser extends LevelUser {

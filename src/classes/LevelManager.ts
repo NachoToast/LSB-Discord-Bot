@@ -9,7 +9,6 @@ import {
     TextChannel,
     User,
 } from 'discord.js';
-import EventEmitter from 'events';
 import Client from '../client/Client';
 import Colours from '../types/Colours';
 import { LevelUpThresholds } from '../types/GuildConfig';
@@ -167,7 +166,7 @@ export default class LevelManager {
 
         let user: LevelUser | undefined = this._levelData[message.author.id];
         if (!user) {
-            user = { xp: 0, level: 0 };
+            user = { xp: 0, level: 0, leftServer: false };
             this._levelData[message.member.id] = user;
         }
 
@@ -220,33 +219,43 @@ export default class LevelManager {
         );
     }
 
-    public getExperienceRanking(experience: number): number {
+    public async getExperienceRanking(
+        guildMembers: GuildMemberManager,
+        experience: number,
+    ): Promise<[number, number]> {
         let rank = 1;
+        let rankIncludingLeft = 1;
 
         for (const key in this._levelData) {
             if (this._levelData[key].xp > experience) {
-                rank += 1;
+                rankIncludingLeft += 1;
+                if (await this.validateUser(key, guildMembers)) {
+                    rank += 1;
+                }
             }
         }
 
-        return rank;
+        return [rank, rankIncludingLeft];
     }
 
-    public async getUserRanking(guild: Guild, numUsers: number = 10): Promise<FullLevelUser[]> {
+    public async getUserRanking(
+        guildMembers: GuildMemberManager,
+        numUsers: number = 10,
+    ): Promise<FullLevelUser[]> {
         const topX: FullLevelUser[] = new Array(numUsers);
 
         for (const id of Object.keys(this._levelData)) {
-            if (!(await this.validateUser(id, guild.members))) {
+            if (!(await this.validateUser(id, guildMembers))) {
                 continue;
             }
-            const { xp, level } = this._levelData[id];
+            const { xp, level, leftServer } = this._levelData[id];
             let insertionIndex = 0;
             while (xp < topX[insertionIndex]?.xp && insertionIndex < numUsers) {
                 insertionIndex++;
             }
 
             if (insertionIndex < numUsers) {
-                topX[insertionIndex] = { id, xp, level };
+                topX[insertionIndex] = { id, xp, level, leftServer };
             }
         }
 

@@ -16,7 +16,7 @@ class Rank implements Command {
 
         let user = client.levels.getUser(targetUser.id);
         if (!user) {
-            user = { level: 0, xp: 0 };
+            user = { level: 0, xp: 0, leftServer: false };
         }
 
         const experienceThroughCurrentLevel = Math.abs(LevelManager.xpToLevel(user.level, user.xp));
@@ -29,9 +29,14 @@ class Rank implements Command {
             .setThumbnail(targetUser.user.avatarURL() || '')
             .setFooter(`Total XP: ${user.xp > 10000 ? `${Math.round(user.xp / 1000)}k` : user.xp}`);
 
+        const [rank, rankIncludingLeft] = await client.levels.getExperienceRanking(
+            message.guild!.members,
+            user.xp,
+        );
+
         const description: string[] = [
             `Level: **${user.level}**`,
-            `Rank: **${client.levels.getExperienceRanking(user.xp)}**`,
+            `Rank: **${rank}** (${rankIncludingLeft})`,
             `XP: **${experienceThroughCurrentLevel}**/${totalLevelXP} [${Math.floor(
                 (100 * experienceThroughCurrentLevel) / totalLevelXP,
             )}%]`,
