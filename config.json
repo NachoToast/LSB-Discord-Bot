@@ -1,4 +1,8 @@
 {
     "prefixes": ["!"],
-    "initialBalance": 100
+
+    "economy": {
+        "initialBalance": 100,
+        "maxTransactionsRecorded": 20
+    }
 }

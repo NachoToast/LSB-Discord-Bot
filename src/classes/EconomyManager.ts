@@ -1,5 +1,6 @@
 import { Message } from 'discord.js';
 import { TypedEmitter } from 'tiny-typed-emitter';
+import Config from '../types/Config';
 import { EconomyUser } from '../types/Economy';
 import DataManager from './DataManager';
 
@@ -11,10 +12,12 @@ export default class EconomyManager extends TypedEmitter<EconomyManagerEvents> {
     private _userData: { [discordID: string]: EconomyUser };
     private _userDataManager: DataManager;
     public initialBalance: number;
+    public maxTransactionsRecorded: number;
 
-    public constructor(initialBalance: number) {
+    public constructor({ initialBalance, maxTransactionsRecorded }: Config['economy']) {
         super();
         this.initialBalance = initialBalance;
+        this.maxTransactionsRecorded = maxTransactionsRecorded;
         this._userDataManager = new DataManager(
             'data/economy/users.json',
             JSON.stringify({}, undefined, 4),
@@ -23,6 +26,7 @@ export default class EconomyManager extends TypedEmitter<EconomyManagerEvents> {
         this._userData = JSON.parse(this._userDataManager.data);
     }
 
+    /** @deprecated We check that `user.transactions` exist in the `getUser` method. */
     public async validateTransactionHistory(save: boolean = true) {
         const objKeys = Object.keys(this._userData);
 
@@ -82,10 +86,8 @@ export default class EconomyManager extends TypedEmitter<EconomyManagerEvents> {
         return this._userData[id].balance;
     }
 
-    public addUserTransaction(personA: string, amount: number, personB: string) {
-        if (!this._userData[personA]) this.createUser(personA);
-        if (!this._userData[personB]) this.createUser(personB);
-    }
+    /** Makes a monetary transaction record for 2 users. */
+    public addUserTransaction(personA: EconomyUser, amount: number, personB: EconomyUser) {}
 
     private async save() {
         this._userDataManager.data = JSON.stringify(this._userData, undefined, 4);

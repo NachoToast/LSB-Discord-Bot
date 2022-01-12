@@ -1,4 +1,7 @@
 export default interface Config {
     prefixes: string[];
-    initialBalance: number;
+    economy: {
+        initialBalance: number;
+        maxTransactionsRecorded: number;
+    };
 }
