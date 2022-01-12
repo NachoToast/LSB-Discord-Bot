@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import Client from '../../../client/Client';
 import Command, { CommandParams } from '../../../client/Command';
-import GuildConfig, { LevelUpThresholds } from '../../../models/GuildConfig';
+import GuildConfig, { LevelUpThresholds } from '../../../types/GuildConfig';
 
 class ConfigureLevels implements Command {
     public name: string = 'levels';

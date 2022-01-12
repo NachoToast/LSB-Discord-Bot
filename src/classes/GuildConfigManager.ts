@@ -1,5 +1,5 @@
 import Client from '../client/Client';
-import GuildConfig from '../models/GuildConfig';
+import GuildConfig from '../types/GuildConfig';
 import DataManager from './DataManager';
 
 export default class GuildConfigManager {

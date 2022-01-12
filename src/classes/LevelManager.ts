@@ -1,7 +1,7 @@
 import { AnyChannel, GuildMember, Message, TextChannel, User } from 'discord.js';
 import Client from '../client/Client';
-import { LevelUpThresholds } from '../models/GuildConfig';
-import { FullLevelUser, LevelUser } from '../models/UserModels';
+import { LevelUpThresholds } from '../types/GuildConfig';
+import { FullLevelUser, LevelUser } from '../types/UserModels';
 import DataManager from './DataManager';
 
 export default class LevelManager {

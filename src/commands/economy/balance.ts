@@ -1,6 +1,6 @@
 import Client from '../../client/Client';
 import Command, { CommandParams } from '../../client/Command';
-import { EconomyUser } from '../../models/UserModels';
+import { EconomyUser } from '../../types/UserModels';
 
 class Balance implements Command {
     public readonly name: string = 'balance';
