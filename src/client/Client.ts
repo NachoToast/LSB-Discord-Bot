@@ -162,41 +162,9 @@ class Client extends DiscordClient {
             }
         };
 
-        const logEconomyValidationProgress = (current: number, total: number) => {
-            if (current === -1 && total === -1) {
-                this.logger.log(
-                    'economyManager',
-                    `[${Colours.FgMagenta}EconomyManager${Colours.Reset}] ${Colours.FgGreen}Background Transaction Validation Skipped${Colours.Reset}`,
-                );
-
-                this.economy.off('backgroundValidation', logEconomyValidationProgress);
-                this.logger.remove('economyManager');
-            } else if (current === total) {
-                this.logger.log(
-                    'economyManager',
-                    `[${Colours.FgMagenta}EconomyManager${Colours.Reset}] ${Colours.FgGreen}Background Transaction Validation Complete!${Colours.Reset}`,
-                );
-                this.economy.off('backgroundValidation', logEconomyValidationProgress);
-                this.logger.remove('economyManager');
-            } else {
-                const percentage = Math.floor((100 * current) / total);
-
-                this.logger.log(
-                    'economyManager',
-                    `[${Colours.FgMagenta}EconomyManager${
-                        Colours.Reset
-                    }] Background Transaction Validation [${Client.progressBar(
-                        percentage,
-                    )}] ${Client.fixedWidthNumber(percentage)}%`,
-                );
-            }
-        };
-
         this.levels.on('backgroundValidation', logBackgroundValidationProgress);
-        this.economy.on('backgroundValidation', logEconomyValidationProgress);
 
         this.levels.validateAllUsersInBackground();
-        this.economy.validateTransactionHistory();
     }
 
     private static fixedWidthNumber(num: number, maxWidth: number = 3): string {
