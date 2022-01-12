@@ -15,7 +15,10 @@ class Config implements Command {
             );
         }
 
-        const outputConfig: string[] = [`**Level Config:**`];
+        const outputConfig: string[] = [
+            `Prefixes: \`${client.prefixes.join(`\`, \``)}\``,
+            `**Level Config:**`,
+        ];
         if (config.levelUpChannel && config.levelUpMessage !== LevelUpThresholds.none) {
             outputConfig.push(
                 `Sending level up messages for **${config.levelUpMessage}** in <#${config.levelUpChannel}>`,
