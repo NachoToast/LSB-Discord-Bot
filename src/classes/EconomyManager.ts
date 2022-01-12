@@ -39,10 +39,15 @@ export default class EconomyManager {
      * @returns {number} The new balance of the user.
      */
     public updateUserBalance(id: string, amountToAdd: number): number {
-        if (this._userData[id] === undefined) this.createUser(id);
+        if (!this._userData[id]) this.createUser(id);
         this._userData[id].balance += amountToAdd;
         this.save();
         return this._userData[id].balance;
+    }
+
+    public addUserTransaction(personA: string, amount: number, personB: string) {
+        if (!this._userData[personA]) this.createUser(personA);
+        if (!this._userData[personB]) this.createUser(personB);
     }
 
     private async save() {

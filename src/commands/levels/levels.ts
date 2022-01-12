@@ -1,12 +1,22 @@
-import { MessageEmbed } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
+import { promisify } from 'util';
 import Command, { CommandParams } from '../../client/Command';
+
+const wait = promisify(setTimeout);
 
 class Levels implements Command {
     public name: string = 'level';
     public aliases?: string[] | undefined = ['levels'];
     public description: string = 'List the 10 highest levelled users in the server';
     public async execute({ client, message }: CommandParams) {
-        const top10 = client.levels.getUserRanking();
+        if (client.levels.validationProgress !== 100) {
+            message.channel.send(
+                `⚠️  Please try again once first-time-load has been completed (${client.levels.validationProgress}%)`,
+            );
+            return;
+        }
+
+        const top10 = await client.levels.getUserRanking(message.guild!);
 
         const messageEmbed = new MessageEmbed()
             .setColor('LUMINOUS_VIVID_PINK')
@@ -16,6 +26,7 @@ class Levels implements Command {
         const desc: string[] = [];
 
         for (let i = 0, len = top10.length; i < len; i++) {
+            if (top10[i] === undefined) continue;
             const { id, level } = top10[i];
 
             desc.push(

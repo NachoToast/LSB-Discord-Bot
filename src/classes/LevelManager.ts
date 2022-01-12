@@ -1,5 +1,17 @@
-import { AnyChannel, GuildMember, Message, TextChannel, User } from 'discord.js';
+import {
+    AnyChannel,
+    Collection,
+    DiscordAPIError,
+    Guild,
+    GuildMember,
+    GuildMemberManager,
+    Message,
+    TextChannel,
+    User,
+} from 'discord.js';
+import EventEmitter from 'events';
 import Client from '../client/Client';
+import Colours from '../types/Colours';
 import { LevelUpThresholds } from '../types/GuildConfig';
 import { FullLevelUser, LevelUser } from '../types/UserModels';
 import DataManager from './DataManager';
@@ -22,6 +34,111 @@ export default class LevelManager {
         this._levelData = JSON.parse(this._levelDataManager.data);
 
         client.on('messageCreate', (message) => this.handleMessage(message));
+        client.on('guildMemberRemove', (member) => {
+            if (this._levelData[member.id]) {
+                this._levelData[member.id].leftServer = true;
+                this.save();
+            }
+        });
+        client.on('guildMemberAdd', (member) => {
+            if (this._levelData[member.id]?.leftServer) {
+                this._levelData[member.id].leftServer = false;
+                this.save();
+            }
+        });
+    }
+
+    public validationProgress: number = 0;
+    public async validateAllUsersInBackground() {
+        const objKeys = Object.keys(this._levelData);
+
+        if (objKeys.filter((key) => this._levelData[key].leftServer === undefined).length === 0) {
+            // no validation needed
+            this.validationProgress = 100;
+            process.stdout.write(
+                `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Skipped${Colours.Reset}\n`,
+            );
+            return;
+        }
+
+        const len = objKeys.length;
+        let progress = 0;
+
+        const calculatePercentageProgress = (): string => {
+            const rawPercentage = (100 * progress) / len;
+            const fixedPercentage = Math.floor(rawPercentage).toString();
+            return ' '.repeat(3 - fixedPercentage.length) + fixedPercentage;
+        };
+
+        const makeProgressBar = (length: number = 30): string => {
+            const rawDecimal = Math.floor((length * progress) / len);
+            return '■'.repeat(rawDecimal) + ' '.repeat(length - rawDecimal);
+        };
+
+        function makeBaseMessage(): void {
+            process.stdout.clearLine(-1);
+            process.stdout.cursorTo(0);
+            process.stdout.write(
+                `[${Colours.FgCyan}LevelManager${
+                    Colours.Reset
+                }] Background User Validation [${makeProgressBar()}] ${calculatePercentageProgress()}%`,
+            );
+        }
+
+        const allGuilds = await this._client.guilds.fetch();
+        if (allGuilds.size === 0) return;
+        const mainGuild = allGuilds.get(allGuilds.firstKey()!);
+        if (!mainGuild) return;
+        const guildMembers = (await mainGuild.fetch()).members;
+
+        for (let i = 0; i < len; i++) {
+            const id = objKeys[i];
+            await this.validateUser(id, guildMembers);
+            progress += 1;
+            this.validationProgress = Math.floor((100 * i) / len);
+
+            makeBaseMessage();
+        }
+
+        process.stdout.clearLine(-1);
+        process.stdout.cursorTo(0);
+        process.stdout.write(
+            `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Complete!${Colours.Reset}\n`,
+        );
+        this.validationProgress = 100;
+    }
+
+    /** Makes sure the user is in the server.
+     * @returns {boolean} Whether the user is valid for ranking.
+     */
+    private async validateUser(id: string, guildMembers: GuildMemberManager): Promise<boolean> {
+        if (this._levelData[id]?.leftServer !== undefined) {
+            return !this._levelData[id].leftServer;
+        }
+
+        try {
+            await guildMembers.fetch(id);
+            this._levelData[id].leftServer = false;
+            if (this._levelData[id]) {
+                this._levelData[id].leftServer = false;
+            } else {
+                this._levelData[id] = { xp: 0, level: 0, leftServer: false };
+            }
+            this.save();
+            return true;
+        } catch (error) {
+            if (!(error instanceof DiscordAPIError) || error.message !== 'Unknown Member') {
+                console.log(`Uknown error occurred trying to fetch user`);
+            } else {
+                if (this._levelData[id]) {
+                    this._levelData[id].leftServer = true;
+                } else {
+                    this._levelData[id] = { xp: 0, level: 0, leftServer: true };
+                }
+                this.save();
+            }
+            return false;
+        }
     }
 
     public static xpToLevel(levelDesired: number, currentXP: number = 0): number {
@@ -115,10 +232,13 @@ export default class LevelManager {
         return rank;
     }
 
-    public getUserRanking(numUsers: number = 10): FullLevelUser[] {
+    public async getUserRanking(guild: Guild, numUsers: number = 10): Promise<FullLevelUser[]> {
         const topX: FullLevelUser[] = new Array(numUsers);
 
         for (const id of Object.keys(this._levelData)) {
+            if (!(await this.validateUser(id, guild.members))) {
+                continue;
+            }
             const { xp, level } = this._levelData[id];
             let insertionIndex = 0;
             while (xp < topX[insertionIndex]?.xp && insertionIndex < numUsers) {

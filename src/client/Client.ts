@@ -1,5 +1,5 @@
 import { Client as DiscordClient, Collection, GuildMember, Message } from 'discord.js';
-import Command from './Command';
+import Command, { CommandParams } from './Command';
 import intents from './Intents';
 import Config from '../types/Config';
 import Auth from '../types/Auth';
@@ -8,10 +8,11 @@ import EconomyManager from '../classes/EconomyManager';
 import commands from '../commands';
 import LevelManager from '../classes/LevelManager';
 import GuildConfigManager from '../classes/GuildConfigManager';
+import { EventEmitter } from 'stream';
 
 class Client extends DiscordClient {
     public readonly devMode: boolean = process.argv.slice(2).includes('--devmode');
-    public readonly token: string;
+    private readonly _startTime = Date.now();
 
     public readonly commands: Collection<string, Command> = new Collection();
     public readonly aliases: Map<string, Command> = new Map();
@@ -32,13 +33,9 @@ class Client extends DiscordClient {
     public readonly levels = new LevelManager(this);
     public readonly guildConfig = new GuildConfigManager();
 
-    /** @deprecated Use `client.economy.initialBalance` instead. */
-    public get initialBalance(): number {
-        return this.economy.initialBalance;
-    }
-
     public constructor() {
         super({ intents });
+        let token: string;
 
         // loading stuff from the config.json and auth.json files
         try {
@@ -52,7 +49,7 @@ class Client extends DiscordClient {
                 );
                 process.exit();
             }
-            this.token = this.devMode ? auth.devToken! : auth.token;
+            token = this.devMode ? auth.devToken! : auth.token;
         } catch (error) {
             if (error instanceof Error) {
                 if (error.message.includes('config.json')) {
@@ -110,6 +107,66 @@ class Client extends DiscordClient {
             console.log(`Unknown error occurred loading commands`);
             console.log(error);
             process.exit();
+        }
+
+        // adding event listeners
+        this.on('ready', this.onReady);
+        this.on('error', this.onError);
+        this.on('messageCreate', this.onMessageCreate);
+
+        // finally we can login
+        this.login(token);
+    }
+
+    private async onReady() {
+        console.log(
+            `${this.user?.tag} logged in (${Colours.FgMagenta}${
+                (Date.now() - this._startTime) / 1000
+            }s${Colours.Reset})`,
+        );
+
+        this.user?.setActivity(`Masterchef`, {
+            type: 'STREAMING',
+            url: 'https://www.twitch.tv/xqcow',
+        });
+
+        await this.levels.validateAllUsersInBackground();
+    }
+
+    private async onError(error: Error) {
+        console.log(error);
+    }
+
+    private async onMessageCreate(message: Message) {
+        if (message.author.bot || !message.guild || !message.member) return;
+
+        let chosenPrefix: string | null = null;
+        for (const prefix of this.prefixes) {
+            if (message.content.startsWith(prefix)) {
+                chosenPrefix = prefix;
+                break;
+            }
+        }
+        if (!chosenPrefix) return;
+
+        const [command, ...args] = message.content.slice(chosenPrefix.length).split(' ');
+        const foundCommand = this.commands.get(command) || this.aliases.get(command);
+
+        if (foundCommand) {
+            const params: CommandParams = { client: this, message, args, chosenPrefix };
+            try {
+                foundCommand.execute(params);
+            } catch (error) {
+                console.log(`An error occurred executing the ${foundCommand.name} command:`);
+                console.log(error);
+                if (error instanceof Error) {
+                    message.channel.send(
+                        `An error occurred executing that command: ${error.message}`,
+                    );
+                } else {
+                    message.channel.send(`An unknown error occurred executing that command`);
+                }
+            }
         }
     }
 
