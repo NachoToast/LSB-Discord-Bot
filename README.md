@@ -4,11 +4,13 @@ A Discord.js bot for the LSB Discord server.
 
 # Roadmap
 
--   [ ] Economy System for "Param Pupees"
+-   [ ] Economy system for "Param Pupees"
+-   [x] Levelling system like Mee6
+-   [x] Guild specific configuration
 
 # Dependencies
 
--   [Node](https://nodejs.org/en/) v16.6 or higher
+-   [Node JS](https://nodejs.org/en/) 16.13.1 or higher
 
 # Installation (Development)
 
@@ -28,7 +30,7 @@ _Follow these instructions to set up your own development version of the bot._
 4. Copy the [`auth.example.json`](./auth.example.json) file.
     1. Rename the copy to [`auth.json`](./auth.json).
     2. Replace the [`devToken`](./auth.example.json#L3) field with the token of the bot you just registered.
-5. Use `yarn` to install dependencies.
+5. Open a terminal and use `yarn` to install dependencies.
 
     ```sh
     $ yarn
