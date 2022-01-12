@@ -4,7 +4,7 @@ import Client from '../client/Client';
 
 class Bing implements Command {
     public name: string = 'bing';
-    public aliases?: string[] | undefined = ['chilling'];
+    public aliases?: string[] | undefined = ['chilling', 'bingchilling'];
     public description: string = 'See whether you are bing or chilling';
     public async execute({ args, message }: CommandParams) {
         const targetUser = await Client.getTargetUser(message, args);
