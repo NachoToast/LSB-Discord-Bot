@@ -1,21 +1,15 @@
 import { Message } from 'discord.js';
 import moment from 'moment';
-import Client from '../client/Client';
 import Config from '../types/Config';
 import { EconomyUser, PupeeTransaction } from '../types/Economy';
 import DataManager from './DataManager';
 export default class EconomyManager {
-    private _client: Client;
     private _userData: { [discordID: string]: EconomyUser };
     private _userDataManager: DataManager;
     public initialBalance: number;
     public maxTransactionsRecorded: number;
 
-    public constructor(
-        client: Client,
-        { initialBalance, maxTransactionsRecorded }: Config['economy'],
-    ) {
-        this._client = client;
+    public constructor({ initialBalance, maxTransactionsRecorded }: Config['economy']) {
         this.initialBalance = initialBalance;
         this.maxTransactionsRecorded = maxTransactionsRecorded;
 
@@ -25,20 +19,6 @@ export default class EconomyManager {
         );
 
         this._userData = JSON.parse(this._userDataManager.data);
-
-        this._client.on('guildMemberRemove', (member) => {
-            if (this._userData[member.id] && !this._userData[member.id]?.leftServer) {
-                this._userData[member.id].leftServer = true;
-                this.save();
-            }
-        });
-
-        this._client.on('guildMemberAdd', (member) => {
-            if (this._userData[member.id]?.leftServer) {
-                this._userData[member.id].leftServer = false;
-                this.save();
-            }
-        });
     }
 
     /** This is used for when fields are missing. */
@@ -109,15 +89,23 @@ export default class EconomyManager {
         return user.balance;
     }
 
+    /** Checks if the new balance of a user is higher or lower than their previously recorded highest/lowest. */
     private userBalanceChecks(user: EconomyUser): void {
+        let mutated = false;
         if (user.balance < user.lowestEverBalance.amount) {
             user.lowestEverBalance = { amount: user.balance, achieved: Date.now() };
+            mutated = true;
         } else if (user.balance > user.highestEverBalance.amount) {
             user.highestEverBalance = { amount: user.balance, achieved: Date.now() };
+            mutated = true;
         }
-        this.save();
+
+        if (mutated) this.save();
     }
 
+    /** Sets a user's balance, only admins should be able to use this.
+     * @param {boolean} clearData Whether to clear transaction logs and highest/lowest balance info.
+     */
     public setUserBalance(user: EconomyUser, newBalance: number, clearData: boolean = true): void {
         user.balance = newBalance;
         if (clearData) {
@@ -130,6 +118,7 @@ export default class EconomyManager {
         this.save();
     }
 
+    /** Makes a string detailing a transaction. */
     public transactionReport(
         user: EconomyUser,
         { toID, fromID, amount, timestamp }: PupeeTransaction,
@@ -186,6 +175,19 @@ export default class EconomyManager {
 
     private async save() {
         this._userDataManager.data = JSON.stringify(this._userData, undefined, 4);
+    }
+
+    /** Gets the rank of a single user. May include people who have left the server. */
+    private getBalanceRanking(balance: number): number {
+        let rank = 1;
+
+        for (const key in this._userData) {
+            if (this._userData[key].balance >= balance) {
+                rank++;
+            }
+        }
+
+        return rank;
     }
 
     public static insufficientBalance(

@@ -118,6 +118,11 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
         }
     }
 
+    /** Gets number of experience required to reach a certain level.
+     * @param {number} levelDesired The level you want to reach.
+     * @param {number} currentXP The total amount of experience you currently have.
+     * @see [GitHub Source](https://github.com/PsKramer/mee6calc/blob/master/calc.js)
+     */
     public static xpToLevel(levelDesired: number, currentXP: number = 0): number {
         // https://github.com/PsKramer/mee6calc/blob/master/calc.js
         const xpNeededFromNone =
@@ -191,6 +196,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
         );
     }
 
+    /** Gets the rank of a single user. `rank` does not include people who have left the server, but `rankIncludingLeft` does. */
     public async getExperienceRanking(
         guildMembers: GuildMemberManager,
         experience: number,
@@ -199,7 +205,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
         let rankIncludingLeft = 1;
 
         for (const key in this._levelData) {
-            if (this._levelData[key].xp > experience) {
+            if (this._levelData[key].xp >= experience) {
                 rankIncludingLeft += 1;
                 if (await this.validateUser(key, guildMembers)) {
                     rank += 1;
@@ -210,6 +216,10 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
         return [rank, rankIncludingLeft];
     }
 
+    /** Gets the top members by experience, doesn't include people who have left the server.
+     * @param {GuildMemberManager} guildMembers The guild member manager for the guild,
+     * this should always be the Client's primary guild.
+     */
     public async getUserRanking(
         guildMembers: GuildMemberManager,
         numUsers: number = 10,

@@ -41,7 +41,7 @@ class Client extends DiscordClient {
         try {
             const config: Config = require('../../config.json');
             this.prefixes = config.prefixes;
-            this.economy = new EconomyManager(this, config.economy);
+            this.economy = new EconomyManager(config.economy);
             const auth: Auth = require('../../auth.json');
             if (this.devMode && !auth.devToken) {
                 console.log(
