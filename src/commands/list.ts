@@ -1,4 +1,4 @@
-import Command, { CommandParams } from '../../client/Command';
+import Command, { CommandParams } from '../client/Command';
 
 class List implements Command {
     public readonly name: string = 'list';

@@ -25,7 +25,9 @@ class Portfolio implements Command {
         }
 
         const description: string[] = [
-            `Balance: **${user.balance}** Param Pupee${user.balance !== 1 ? 's' : ''}`,
+            `Balance: **${user.balance}** Param Pupee${
+                user.balance !== 1 ? 's' : ''
+            } (Rank **#${client.economy.getBalanceRanking(user.balance)}**)`,
             `Highest Ever Balance: **${user.highestEverBalance.amount}** Param Pupee${
                 user.highestEverBalance.amount !== 1 ? 's' : ''
             } (achieved ${moment(user.highestEverBalance.achieved).fromNow()})`,

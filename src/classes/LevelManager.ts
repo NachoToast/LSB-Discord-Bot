@@ -201,8 +201,8 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
         guildMembers: GuildMemberManager,
         experience: number,
     ): Promise<[number, number]> {
-        let rank = 1;
-        let rankIncludingLeft = 1;
+        let rank = 0;
+        let rankIncludingLeft = 0;
 
         for (const key in this._levelData) {
             if (this._levelData[key].xp >= experience) {

@@ -124,13 +124,14 @@ export default class EconomyManager {
         { toID, fromID, amount, timestamp }: PupeeTransaction,
     ): string {
         const timestampS = moment(timestamp).fromNow();
+        const absAmount = Math.abs(amount);
         let output = `${timestampS[0].toUpperCase() + timestampS.slice(1)}: `;
         const userTo = this._userData[toID];
         if (userTo === user) {
             // someone either paid user, or took from user
             if (amount < 0)
-                output += `Had **${Math.abs(amount)}** Param Pupee${
-                    amount !== 1 ? 's' : ''
+                output += `Had **${absAmount}** Param Pupee${
+                    absAmount !== 1 ? 's' : ''
                 } yoinked by <@${fromID}>`;
             else
                 output += `Received **${amount}** Param Pupee${
@@ -139,8 +140,8 @@ export default class EconomyManager {
         } else {
             // user paid, or stole from
             if (amount < 0)
-                output += `Stole **${Math.abs(amount)}** Param Pupee${
-                    amount !== 1 ? 's' : ''
+                output += `Stole **${absAmount}** Param Pupee${
+                    absAmount !== 1 ? 's' : ''
                 } from <@${toID}>`;
             else output += `Gave **${amount}** Param Pupee${amount !== 1 ? 's' : ''} to <@${toID}>`;
         }
@@ -178,8 +179,8 @@ export default class EconomyManager {
     }
 
     /** Gets the rank of a single user. May include people who have left the server. */
-    private getBalanceRanking(balance: number): number {
-        let rank = 1;
+    public getBalanceRanking(balance: number): number {
+        let rank = 0;
 
         for (const key in this._userData) {
             if (this._userData[key].balance >= balance) {
@@ -188,6 +189,23 @@ export default class EconomyManager {
         }
 
         return rank;
+    }
+
+    private readonly sortByBalance = (a: string, b: string): number =>
+        this._userData[b].balance - this._userData[a].balance;
+
+    public getTopBalance(numUsers: number = 10): (EconomyUser & { id: string })[] {
+        // TODO: smarter way of doing this, so we only need to recalculate rankings on balance change,
+        // otherwise we can get a stored list
+        return Object.keys(this._userData)
+            .sort(this.sortByBalance)
+            .slice(0, numUsers)
+            .map((id) => {
+                return {
+                    ...this._userData[id],
+                    id,
+                };
+            });
     }
 
     public static insufficientBalance(

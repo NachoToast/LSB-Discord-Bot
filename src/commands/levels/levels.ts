@@ -1,12 +1,9 @@
 import { MessageEmbed } from 'discord.js';
-import { promisify } from 'util';
 import Command, { CommandParams } from '../../client/Command';
 
-const wait = promisify(setTimeout);
-
-class Levels implements Command {
+export class Levels implements Command {
     public name: string = 'level';
-    public aliases?: string[] | undefined = ['levels'];
+    public aliases?: string[] | undefined = ['levels', 'leveltop'];
     public description: string = 'List the 10 highest levelled users in the server';
     public async execute({ client, message }: CommandParams) {
         if (client.levels.validationProgress !== 100) {
@@ -20,13 +17,13 @@ class Levels implements Command {
 
         const messageEmbed = new MessageEmbed()
             .setColor('LUMINOUS_VIVID_PINK')
-            .setTitle(`🏆  ${message.guild?.name} Rankings`)
-            .setThumbnail(message.guild!.iconURL() || client.user?.avatarURL() || '');
+            .setTitle(`🏆  ${message.guild?.name || ''} Rankings`)
+            .setThumbnail(message.guild?.iconURL() || client.user?.avatarURL() || '');
 
         const desc: string[] = [];
 
         for (let i = 0, len = top10.length; i < len; i++) {
-            if (top10[i] === undefined) continue;
+            if (!top10[i]) continue;
             const { id, level } = top10[i];
 
             desc.push(
@@ -39,7 +36,8 @@ class Levels implements Command {
         message.channel.send({ embeds: [messageEmbed] });
     }
 
-    private static medalGiver(position: number): string {
+    public static medalGiver(position: number): string {
+        // TODO: move this to global util/helper
         if (position === 0) return '🥇';
         if (position === 1) return '🥈';
         return '🥉';

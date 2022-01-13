@@ -1,6 +1,40 @@
+import { MessageEmbed } from 'discord.js';
 import Client from '../../client/Client';
 import Command, { CommandParams } from '../../client/Command';
 import { EconomyUser } from '../../types/Economy';
+import { Levels } from '../levels/levels';
+
+class Baltop implements Command {
+    public readonly name: string = 'balancetop';
+    public readonly description: string = 'List the 10 richest people from the server';
+    public readonly aliases?: string[] | undefined = ['baltop'];
+
+    public async execute({ client, message }: CommandParams) {
+        const top10 = client.economy.getTopBalance();
+
+        const messageEmbed = new MessageEmbed()
+            .setColor('#32CD32')
+            .setTitle(`💸  ${message.guild?.name || ''} Richest People`)
+            .setThumbnail(message.guild?.iconURL() || client.user?.avatarURL() || '');
+
+        const desc: string[] = [];
+
+        for (let i = 0, len = top10.length; i < len; i++) {
+            if (!top10[i]) continue;
+            const { id, balance } = top10[i];
+
+            desc.push(
+                `${
+                    i < 3 ? Levels.medalGiver(i) + ' ' : `${i + 1}.`
+                } <@${id}> - **${balance}** Param Pupees`,
+            );
+        }
+
+        messageEmbed.setDescription('\u200b\n' + desc.join('\n\n'));
+
+        message.channel.send({ embeds: [messageEmbed] });
+    }
+}
 
 class SetBalance implements Command {
     public readonly name: string = 'setbalance';
@@ -25,7 +59,12 @@ class SetBalance implements Command {
 
         let user = client.economy.getOrMakeUser(targetUser.id);
 
-        client.economy.updateUserBalance(user, targetAmount);
+        client.economy.setUserBalance(user, targetAmount);
+        message.channel.send(
+            `Set <@${targetUser.id}>'s balance to ${user.balance} Param Pupee${
+                user.balance !== 1 ? 's' : ''
+            }`,
+        );
     }
 }
 
@@ -55,3 +94,5 @@ class Balance implements Command {
 }
 
 export const balance = new Balance();
+export const setbalance = new SetBalance();
+export const baltop = new Baltop();
