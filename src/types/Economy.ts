@@ -9,6 +9,7 @@ export interface EconomyUser {
         amount: number;
         achieved: number;
     };
+    leftServer: boolean;
 }
 
 export interface PupeeTransaction {

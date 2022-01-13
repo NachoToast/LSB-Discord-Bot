@@ -1,5 +1,5 @@
 export default class Logger {
-    private _logMap: { [key: string]: string } = {};
+    private readonly _logMap: { [key: string]: string } = {};
 
     public log(key: string, value: string) {
         let linesToClear = Object.keys(this._logMap).length;

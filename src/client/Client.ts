@@ -8,7 +8,6 @@ import EconomyManager from '../classes/EconomyManager';
 import commands from '../commands';
 import LevelManager from '../classes/LevelManager';
 import GuildConfigManager from '../classes/GuildConfigManager';
-import { EventEmitter } from 'stream';
 import Logger from '../classes/Logger';
 
 class Client extends DiscordClient {
@@ -18,7 +17,6 @@ class Client extends DiscordClient {
     public readonly commands: Collection<string, Command> = new Collection();
     public readonly aliases: Map<string, Command> = new Map();
     public readonly prefixes: string[];
-    // public readonly initialBalance: number;
 
     private static readonly tagsEveryone = new RegExp(/@everyone/);
     private static readonly tagsHere = new RegExp(/@here/);
@@ -43,7 +41,7 @@ class Client extends DiscordClient {
         try {
             const config: Config = require('../../config.json');
             this.prefixes = config.prefixes;
-            this.economy = new EconomyManager(config.economy);
+            this.economy = new EconomyManager(this, config.economy);
             const auth: Auth = require('../../auth.json');
             if (this.devMode && !auth.devToken) {
                 console.log(
@@ -138,7 +136,6 @@ class Client extends DiscordClient {
                     'levelManager',
                     `[${Colours.FgCyan}LevelManager${Colours.Reset}] ${Colours.FgGreen}Background User Validation Skipped${Colours.Reset}`,
                 );
-
                 this.levels.off('backgroundValidation', logBackgroundValidationProgress);
                 this.logger.remove('backgroundValidation');
             } else if (current === total) {

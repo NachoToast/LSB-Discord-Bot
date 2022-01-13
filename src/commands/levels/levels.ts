@@ -1,4 +1,4 @@
-import { Message, MessageEmbed } from 'discord.js';
+import { MessageEmbed } from 'discord.js';
 import { promisify } from 'util';
 import Command, { CommandParams } from '../../client/Command';
 

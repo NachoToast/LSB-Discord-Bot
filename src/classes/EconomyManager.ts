@@ -1,16 +1,21 @@
 import { Message } from 'discord.js';
 import moment from 'moment';
+import Client from '../client/Client';
 import Config from '../types/Config';
 import { EconomyUser, PupeeTransaction } from '../types/Economy';
 import DataManager from './DataManager';
-
 export default class EconomyManager {
+    private _client: Client;
     private _userData: { [discordID: string]: EconomyUser };
     private _userDataManager: DataManager;
     public initialBalance: number;
     public maxTransactionsRecorded: number;
 
-    public constructor({ initialBalance, maxTransactionsRecorded }: Config['economy']) {
+    public constructor(
+        client: Client,
+        { initialBalance, maxTransactionsRecorded }: Config['economy'],
+    ) {
+        this._client = client;
         this.initialBalance = initialBalance;
         this.maxTransactionsRecorded = maxTransactionsRecorded;
 
@@ -20,6 +25,20 @@ export default class EconomyManager {
         );
 
         this._userData = JSON.parse(this._userDataManager.data);
+
+        this._client.on('guildMemberRemove', (member) => {
+            if (this._userData[member.id] && !this._userData[member.id]?.leftServer) {
+                this._userData[member.id].leftServer = true;
+                this.save();
+            }
+        });
+
+        this._client.on('guildMemberAdd', (member) => {
+            if (this._userData[member.id]?.leftServer) {
+                this._userData[member.id].leftServer = false;
+                this.save();
+            }
+        });
     }
 
     /** This is used for when fields are missing. */
@@ -35,6 +54,7 @@ export default class EconomyManager {
                 amount: this.initialBalance,
                 achieved: Date.now(),
             },
+            leftServer: false,
         };
         return economyUser;
     }
@@ -53,7 +73,8 @@ export default class EconomyManager {
         for (const key of Object.keys(defaultUser) as (keyof EconomyUser)[]) {
             if (!userKeys.includes(key)) {
                 mutatedUser = true;
-                user[key] = defaultUser[key] as any;
+                // @ts-ignore
+                user[key] = defaultUser[key];
             }
         }
         if (mutatedUser) this.save();

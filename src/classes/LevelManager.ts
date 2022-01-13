@@ -1,16 +1,12 @@
 import {
     AnyChannel,
-    Collection,
     DiscordAPIError,
-    Guild,
     GuildMember,
     GuildMemberManager,
     Message,
-    TextChannel,
     User,
 } from 'discord.js';
 import Client from '../client/Client';
-import Colours from '../types/Colours';
 import { LevelUpThresholds } from '../types/GuildConfig';
 import { FullLevelUser, LevelUser } from '../types/UserModels';
 import DataManager from './DataManager';
@@ -40,7 +36,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
 
         client.on('messageCreate', (message) => this.handleMessage(message));
         client.on('guildMemberRemove', (member) => {
-            if (this._levelData[member.id]) {
+            if (this._levelData[member.id] && !this._levelData[member.id]?.leftServer) {
                 this._levelData[member.id].leftServer = true;
                 this.save();
             }
@@ -57,7 +53,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
     public async validateAllUsersInBackground(save: boolean = true) {
         const objKeys = Object.keys(this._levelData);
 
-        if (objKeys.filter((key) => this._levelData[key].leftServer === undefined).length === 0) {
+        if (!objKeys.some((key) => this._levelData[key].leftServer === undefined)) {
             // no validation needed
             this.validationProgress = 100;
             this.emit('backgroundValidation', -1, -1);
@@ -162,12 +158,6 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
                 user.level += 1;
             }
         }
-
-        // console.log(
-        //     `${message.author.username} got ${addedXP}xp (total ${user.xp})${
-        //         levelChanged ? ` reaching level ${user.level}` : ''
-        //     }`,
-        // );
 
         if (levelChanged) {
             this.handleLevelUpMessage(message.member, user.level);

@@ -1,4 +1,4 @@
-import { MessageEmbed, UserManager } from 'discord.js';
+import { MessageEmbed } from 'discord.js';
 import moment from 'moment';
 import Client from '../../client/Client';
 import Command, { CommandParams } from '../../client/Command';

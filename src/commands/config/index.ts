@@ -1,6 +1,6 @@
 import Client from '../../client/Client';
 import Command, { CommandParams } from '../../client/Command';
-import GuildConfig, { LevelUpThresholds } from '../../types/GuildConfig';
+import { LevelUpThresholds } from '../../types/GuildConfig';
 import levels from './configure/levels';
 
 class Config implements Command {
