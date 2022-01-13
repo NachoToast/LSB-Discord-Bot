@@ -54,8 +54,8 @@ class SetBalance implements Command {
 
         if (targetUser === null)
             return message.channel.send(`Invalid user, '${Client.filterMentions(args[0])}'`);
-        if (!Number.isInteger(targetAmount))
-            return message.channel.send(`${Client.filterMentions(args[1])} is not a valid integer`);
+        if (args[1] === '' || Number.isNaN(targetAmount))
+            return message.channel.send(`${Client.filterMentions(args[1])} is not a valid numer`);
 
         let user = client.economy.getOrMakeUser(targetUser.id);
 
