@@ -36,27 +36,32 @@ class Work implements Command {
         ];
 
         let netAmount = amount;
+        const user = client.economy.getOrMakeUser(message.author.id);
 
         if (afterNasaBonus) {
             output.push(`🔥  **x2** multiplier (Nasa bonus)`);
             netAmount *= 2;
+            user.miningStats.nasaBonuses++;
         }
         if (topOfTheHourBonus) {
             output.push(`🕛  **+10** Param Pupees (top of the hour bonus)`);
             netAmount += 10;
+            user.miningStats.hourBonuses++;
         }
 
         if (muskBonus) {
             output.push(`💎  **+100** Param Pupees (Elon bonus)`);
             netAmount += 100;
+            user.miningStats.elonBonuses++;
         }
 
         if (netAmount !== amount) {
             output.push(`Total: **${netAmount}** Param Pupees`);
         }
 
-        const user = client.economy.getOrMakeUser(message.author.id);
+        user.miningStats.totalGainedFromMining += netAmount;
         user.balance += netAmount;
+        user.miningStats.timesMined++;
         saveCallback();
 
         message.channel.send(output.join('\n'));

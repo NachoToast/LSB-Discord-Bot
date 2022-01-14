@@ -10,6 +10,14 @@ export interface EconomyUser {
         achieved: number;
     };
     leftServer: boolean;
+
+    miningStats: {
+        timesMined: number;
+        nasaBonuses: number;
+        hourBonuses: number;
+        elonBonuses: number;
+        totalGainedFromMining: number;
+    };
 }
 
 export interface PupeeTransaction {

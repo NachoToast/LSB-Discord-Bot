@@ -1,5 +1,5 @@
 import { MessageEmbed } from 'discord.js';
-import moment from 'moment';
+import moment, { min } from 'moment';
 import Client from '../../client/Client';
 import Command, { CommandParams } from '../../client/Command';
 
@@ -55,9 +55,24 @@ class Portfolio implements Command {
             if (shownTransactions) {
                 messageEmbed.addField(`Transaction History (${displayedCount})`, shownTransactions);
             }
-            messageEmbed.setFooter(
-                `Showing ${displayedCount} of ${user.transactions.length} Recorded Transactions`,
-            );
+
+            if (displayedCount !== user.transactions.length) {
+                messageEmbed.setFooter(
+                    `Showing ${displayedCount} of ${user.transactions.length} Recorded Transactions`,
+                );
+            }
+        }
+
+        if (user.miningStats.timesMined > 0) {
+            const { timesMined, nasaBonuses, hourBonuses, elonBonuses, totalGainedFromMining } =
+                user.miningStats;
+            const miningStats: string[] = [`Times Mined: **${timesMined}**`];
+            if (nasaBonuses) miningStats.push(`Nasa Bonuses: **${nasaBonuses}**`);
+            if (hourBonuses) miningStats.push(`Hour Bonuses: **${hourBonuses}**`);
+            if (elonBonuses) miningStats.push(`Elon Bonuses: **${elonBonuses}**`);
+            miningStats.push(`Total Mined: **${totalGainedFromMining}**`);
+
+            messageEmbed.addField(`⛏️  Mining Stats`, miningStats.join('\n'), true);
         }
 
         message.channel.send({ embeds: [messageEmbed] });

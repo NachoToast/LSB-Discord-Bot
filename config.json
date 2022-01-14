@@ -6,10 +6,10 @@
         "initialBalance": 100,
         "maxTransactionsRecorded": 20,
         "mine": {
-            "cooldown_seconds": 1800,
+            "cooldown_seconds": 0,
             "min_yield": 10,
             "max_yield": 20,
-            "elonBonus": 1,
+            "elonBonus": 50,
             "nasaBonus": true,
             "hourBonus": true
         }

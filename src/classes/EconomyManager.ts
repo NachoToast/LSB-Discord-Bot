@@ -35,6 +35,13 @@ export default class EconomyManager {
                 achieved: Date.now(),
             },
             leftServer: false,
+            miningStats: {
+                timesMined: 0,
+                nasaBonuses: 0,
+                hourBonuses: 0,
+                elonBonuses: 0,
+                totalGainedFromMining: 0,
+            },
         };
         return economyUser;
     }
@@ -55,6 +62,8 @@ export default class EconomyManager {
                 mutatedUser = true;
                 // @ts-ignore
                 user[key] = defaultUser[key];
+                // TODO: make this work for nested objects
+                // (current it will replace the whole thing)
             }
         }
         if (mutatedUser) this.save();
@@ -112,6 +121,7 @@ export default class EconomyManager {
             user.lowestEverBalance = { amount: user.balance, achieved: Date.now() };
             user.highestEverBalance = { amount: user.balance, achieved: Date.now() };
             user.transactions = [];
+            user.miningStats = this.makeDefaultEconomyUser().miningStats;
         } else {
             this.userBalanceChecks(user);
         }
