@@ -30,7 +30,6 @@ class Slots implements Command {
 
         const setNumber = Math.floor(Math.random() * this._slotSets.length);
         const set = await this.get5guildEmojis(message.guild!.emojis);
-        console.log(set);
         while (set.length < 5) {
             // if there aren't enough guild emojis, fill it up with normal emojis
             set.push(
