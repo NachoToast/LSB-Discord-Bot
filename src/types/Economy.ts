@@ -18,6 +18,13 @@ export interface EconomyUser {
         elonBonuses: number;
         totalGainedFromMining: number;
     };
+
+    slotsStats: {
+        timesGambled: number;
+        amountGambled: number;
+        timesWon: number;
+        amountWon: number;
+    };
 }
 
 export interface PupeeTransaction {

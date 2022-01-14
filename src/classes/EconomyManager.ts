@@ -42,6 +42,12 @@ export default class EconomyManager {
                 elonBonuses: 0,
                 totalGainedFromMining: 0,
             },
+            slotsStats: {
+                timesGambled: 0,
+                timesWon: 0,
+                amountWon: 0,
+                amountGambled: 0,
+            },
         };
         return economyUser;
     }
@@ -184,7 +190,7 @@ export default class EconomyManager {
         this.save();
     }
 
-    private async save() {
+    public async save() {
         this._userDataManager.data = JSON.stringify(this._userData, undefined, 4);
     }
 
@@ -199,6 +205,18 @@ export default class EconomyManager {
         }
 
         return rank;
+    }
+
+    public slots(user: EconomyUser, amountGambled: number, amountWon?: number) {
+        user.slotsStats.timesGambled++;
+        user.slotsStats.amountGambled += amountGambled;
+        user.balance -= amountGambled;
+        if (amountWon) {
+            user.slotsStats.timesWon++;
+            user.balance += amountWon;
+            user.slotsStats.amountWon += amountWon;
+        }
+        this.save();
     }
 
     private readonly sortByBalance = (a: string, b: string): number =>
