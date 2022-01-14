@@ -219,11 +219,13 @@ export default class EconomyManager {
     }
 
     /** Generate a random amount of Param Pupees
-     * @returns {number | { amount: number; saveCallback: () => void }}
+     * @returns {number | { amount: number; saveCallback: (newUser: EconomyUser) => void }}
      * A number represing time until this can be called in seconds, or
      * The amount mined, and a function to save that once applied externally.
      */
-    public mine(id: string): number | { amount: number; saveCallback: () => void } {
+    public mine(
+        id: string,
+    ): number | { amount: number; saveCallback: (newUser: EconomyUser) => void } {
         const { min_yield: min, max_yield: max, cooldown_seconds: cooldown } = this._config.mine;
 
         if (this._userCooldowns[id]?.[ActionCooldownTypes.mine]) {
@@ -241,7 +243,13 @@ export default class EconomyManager {
 
         const amount = min + Math.floor(Math.random() * (max - min));
 
-        return { amount, saveCallback: () => this.save() };
+        return {
+            amount,
+            saveCallback: (newUser) => {
+                this.save();
+                this.userBalanceChecks(newUser);
+            },
+        };
     }
 
     public static insufficientBalance(
