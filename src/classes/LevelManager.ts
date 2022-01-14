@@ -273,8 +273,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
                 newLevel !== 10 &&
                 newLevel !== 20 &&
                 newLevel !== 25 &&
-                newLevel !== 35 &&
-                !this._client.devMode
+                newLevel !== 35
             ) {
                 return;
             }
