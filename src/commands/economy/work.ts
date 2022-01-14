@@ -69,11 +69,11 @@ class Work implements Command {
 
     private async afterNasaBonus(client: Client, messages: MessageManager): Promise<boolean> {
         const recentMessages = await messages.fetch();
-        const secondLastMessage = recentMessages.at(1);
-        return (
-            secondLastMessage?.author.id ===
-            (client.devMode ? '240312568273436674' : '239562978037465088')
-        );
+        const lastXMessages = recentMessages
+            .filter((message) => !message.author.bot)
+            .map((message) => message.author.id)
+            .slice(0, 5);
+        return lastXMessages.includes(client.devMode ? '240312568273436674' : '239562978037465088');
     }
 
     private topOfTheHourBonus(): boolean {
