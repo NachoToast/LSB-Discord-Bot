@@ -51,3 +51,7 @@ _Follow these instructions to set up your own development version of the bot._
 If you want user levels to carry over from when Mee6 was in use, you can run the porting script using `yarn port`.
 
 You'll need to enter the ID of the server, and make sure Mee6 hasn't left it yet.
+
+Once you do this, you'll see a message about loading legacy data when you start the bot.
+
+After you've started it once (in development or production), you can safely delete the `archive` folder.
