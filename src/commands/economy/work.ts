@@ -1,5 +1,4 @@
-import { Channel, Message, MessageManager, TextChannel } from 'discord.js';
-import moment from 'moment';
+import { MessageManager } from 'discord.js';
 import Client from '../../client/Client';
 import Command, { CommandParams } from '../../client/Command';
 
