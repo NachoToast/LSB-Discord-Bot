@@ -1,5 +1,6 @@
 export default interface Config {
     prefixes: string[];
+    allowAnyoneToSeeConfig: boolean;
     economy: {
         initialBalance: number;
         maxTransactionsRecorded: number;
@@ -7,6 +8,9 @@ export default interface Config {
             cooldown_seconds: number;
             min_yield: number;
             max_yield: number; // exclusive
+            elonBonus: number; // 0 to 100 (inclusive)
+            nasaBonus: boolean;
+            hourBonus: boolean;
         };
     };
 }

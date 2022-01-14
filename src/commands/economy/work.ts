@@ -24,9 +24,12 @@ class Work implements Command {
 
         let { amount, saveCallback } = didMine;
 
-        const afterNasaBonus = await this.afterNasaBonus(client, message.channel.messages);
-        const topOfTheHourBonus = this.topOfTheHourBonus();
-        const elonBonus = this.elonBonus();
+        const { nasaBonus, elonBonus, hourBonus } = client.config.economy.mine;
+
+        const afterNasaBonus =
+            nasaBonus && (await this.afterNasaBonus(client, message.channel.messages));
+        const topOfTheHourBonus = hourBonus && this.topOfTheHourBonus();
+        const muskBonus = elonBonus !== 0 && this.elonBonus(elonBonus);
 
         const output: string[] = [
             `⛏️  You mined **${amount}** Param Pupee${amount !== 1 ? 's' : ''}`,
@@ -43,7 +46,7 @@ class Work implements Command {
             netAmount += 10;
         }
 
-        if (elonBonus) {
+        if (muskBonus) {
             output.push(`💎  **+100** Param Pupees (Elon bonus)`);
             netAmount += 100;
         }
@@ -72,9 +75,9 @@ class Work implements Command {
         return new Date().getMinutes() === 0;
     }
 
-    private elonBonus(): boolean {
+    private elonBonus(chance: number): boolean {
         const randInt = 1 + Math.floor(Math.random() * 100); // 1 to 100 (inclusive)
-        return randInt === 1; // 1% chance
+        return randInt <= chance; // X% chance
     }
 }
 

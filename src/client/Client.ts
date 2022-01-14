@@ -14,6 +14,8 @@ class Client extends DiscordClient {
     public readonly devMode: boolean = process.argv.slice(2).includes('--devmode');
     private readonly _startTime = Date.now();
 
+    public readonly config: Config;
+
     public readonly commands: Collection<string, Command> = new Collection();
     public readonly aliases: Map<string, Command> = new Map();
     public readonly prefixes: string[];
@@ -40,6 +42,7 @@ class Client extends DiscordClient {
         // loading stuff from the config.json and auth.json files
         try {
             const config: Config = require('../../config.json');
+            this.config = config;
             this.prefixes = config.prefixes;
             this.economy = new EconomyManager(config.economy);
             const auth: Auth = require('../../auth.json');

@@ -7,7 +7,19 @@ class Config implements Command {
     public name: string = 'config';
     public description: string = "See this server's bot config";
     public aliases?: string[] | undefined = ['conf', 'settings'];
-    public async execute({ client, message, chosenPrefix }: CommandParams) {
+
+    public async execute({ client, message, args, chosenPrefix }: CommandParams) {
+        if (
+            !!args[0] &&
+            (args[0] === 'full' || args[0] === 'all') &&
+            client.config.allowAnyoneToSeeConfig
+        ) {
+            const output: string[] = ['```json'];
+            output.push(JSON.stringify(client.config, undefined, 4));
+            output.push('```');
+            return message.channel.send(output.join('\n'));
+        }
+
         const config = client.guildConfig.getGuildConfig(message.guildId!);
         if (!config) {
             return message.channel.send(
