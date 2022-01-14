@@ -23,7 +23,7 @@ class Slots implements Command {
         this.get5guildEmojis(message.guild!.emojis);
 
         if (economyUser.balance < amountToBet) {
-            EconomyManager.insufficientBalance(message, { have: economyUser.balance });
+            return EconomyManager.insufficientBalance(message, { have: economyUser.balance });
         }
 
         if (amountToBet < 5) {
@@ -56,7 +56,7 @@ class Slots implements Command {
             this.giveCuts(client, amountToBet * 4);
             amountWon = amountToBet * 4;
         } else {
-            message.channel.send(`unlucky`);
+            message.channel.send(`unlucky (-${amountToBet})`);
         }
 
         client.economy.slots(economyUser, amountToBet, amountWon);
