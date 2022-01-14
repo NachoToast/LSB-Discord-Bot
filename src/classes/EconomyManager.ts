@@ -121,12 +121,13 @@ export default class EconomyManager {
     /** Sets a user's balance, only admins should be able to use this.
      * @param {boolean} clearData Whether to clear transaction logs and highest/lowest balance info.
      */
-    public setUserBalance(user: EconomyUser, newBalance: number, clearData: boolean = true): void {
+    public setUserBalance(user: EconomyUser, newBalance: number, clearData: boolean = false): void {
         user.balance = newBalance;
         if (clearData) {
             user.lowestEverBalance = { amount: user.balance, achieved: Date.now() };
             user.highestEverBalance = { amount: user.balance, achieved: Date.now() };
             user.transactions = [];
+            user.slotsStats = this.makeDefaultEconomyUser().slotsStats;
             user.miningStats = this.makeDefaultEconomyUser().miningStats;
         } else {
             this.userBalanceChecks(user);
