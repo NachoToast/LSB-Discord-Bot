@@ -249,12 +249,16 @@ class Client extends DiscordClient {
         args: string[],
         allowBots: boolean = false,
     ): Promise<GuildMember | null> {
-        if (!args.length || !this.tagsUser.test(args[0])) return message.member;
-        const member =
-            (await message.guild?.members?.fetch(args[0].replace(/[<@!>]/g, ''))) ?? null;
-        if (allowBots) return member;
-        if (member?.user.bot) return null;
-        return member;
+        try {
+            if (!args.length || !this.tagsUser.test(args[0])) return message.member;
+            const member =
+                (await message.guild?.members?.fetch(args[0].replace(/[<@!>]/g, ''))) ?? null;
+            if (allowBots) return member;
+            if (member?.user.bot) return null;
+            return member;
+        } catch (error) {
+            return null;
+        }
     }
 
     public static async horribleError(message: Message, args: string[], extraInfo?: string[]) {
