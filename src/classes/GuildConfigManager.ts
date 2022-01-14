@@ -1,4 +1,3 @@
-import Client from '../client/Client';
 import GuildConfig from '../types/GuildConfig';
 import DataManager from './DataManager';
 

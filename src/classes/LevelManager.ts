@@ -1,10 +1,12 @@
 import {
-    AnyChannel,
     DiscordAPIError,
     GuildMember,
     GuildMemberManager,
     Message,
     User,
+    Channel,
+    TextChannel,
+    AnyChannel,
 } from 'discord.js';
 import Client from '../client/Client';
 import { LevelUpThresholds } from '../types/GuildConfig';

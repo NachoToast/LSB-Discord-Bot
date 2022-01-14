@@ -1,5 +1,5 @@
 import { MessageEmbed } from 'discord.js';
-import moment, { min } from 'moment';
+import moment from 'moment';
 import Client from '../../client/Client';
 import Command, { CommandParams } from '../../client/Command';
 
