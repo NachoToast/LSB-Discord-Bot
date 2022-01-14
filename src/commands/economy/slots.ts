@@ -76,6 +76,8 @@ class Slots implements Command {
 
         aryan.balance += cutToAryan;
         tanishk.balance += cutToTanishk;
+        client.economy.userBalanceChecks(aryan);
+        client.economy.userBalanceChecks(tanishk);
         client.economy.save();
     }
 

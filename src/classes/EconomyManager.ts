@@ -105,7 +105,7 @@ export default class EconomyManager {
     }
 
     /** Checks if the new balance of a user is higher or lower than their previously recorded highest/lowest. */
-    private userBalanceChecks(user: EconomyUser): void {
+    public userBalanceChecks(user: EconomyUser): void {
         let mutated = false;
         if (user.balance < user.lowestEverBalance.amount) {
             user.lowestEverBalance = { amount: user.balance, achieved: Date.now() };
@@ -216,6 +216,7 @@ export default class EconomyManager {
             user.balance += amountWon;
             user.slotsStats.amountWon += amountWon;
         }
+        this.userBalanceChecks(user);
         this.save();
     }
 
