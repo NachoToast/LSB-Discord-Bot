@@ -1,5 +1,6 @@
 node_modules/
 build/
 data/
+archive/
 
 auth.json

@@ -12,7 +12,7 @@ A Discord.js bot for the LSB Discord server.
 
 -   [Node JS](https://nodejs.org/en/) 16.13.1 or higher
 
-# Installation (Development)
+# Installation
 
 _Follow these instructions to set up your own development version of the bot._
 
@@ -42,5 +42,12 @@ _Follow these instructions to set up your own development version of the bot._
     $ yarn dev
     ```
 
--   To start the bot in production, you can use `yarn start` or simply `node .` (make sure you've built first using `yarn build`)
+-   To start the bot in production, you can use `yarn start` or simply `node .`
+    -   Make sure you've run `yarn build` first, and have a `token` configured in [`config.json`](./config.json)
 -   If you don't have `yarn` installed, you can install it via `npm` using `npm i -g yarn`
+
+# Levels
+
+If you want user levels to carry over from when Mee6 was in use, you can run the porting script using `yarn port`.
+
+You'll need to enter the ID of the server, and make sure Mee6 hasn't left it yet.
