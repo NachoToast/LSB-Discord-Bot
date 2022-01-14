@@ -33,9 +33,10 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
                 { id: string; level: number; xp: number },
             ] = require('../archive/mee6.json');
 
+            console.log(`Loading Legacy Data`);
+
             for (const { id, level, xp } of legacyData) {
-                // @ts-ignore
-                startingData[id] = { level, xp };
+                startingData[id] = { level, xp, leftServer: undefined as any as boolean };
             }
         } catch (error) {
             //
