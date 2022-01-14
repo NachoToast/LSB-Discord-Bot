@@ -34,6 +34,7 @@ class Config implements Command {
 class Configure implements Command {
     public name: string = 'configure';
     public description: string = 'Configure a specific module for the server';
+    public aliases?: string[] = ['setconf'];
     public exampleUsage(chosenPrefix: string): string {
         return `${chosenPrefix}configure levels`;
     }

@@ -3,5 +3,10 @@ export default interface Config {
     economy: {
         initialBalance: number;
         maxTransactionsRecorded: number;
+        mine: {
+            cooldown_seconds: number;
+            min_yield: number;
+            max_yield: number; // exclusive
+        };
     };
 }

@@ -20,3 +20,7 @@ export interface PupeeTransaction {
     toID: string;
     timestamp: number;
 }
+
+export enum ActionCooldownTypes {
+    mine,
+}

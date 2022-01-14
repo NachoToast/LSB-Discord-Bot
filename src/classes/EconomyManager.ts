@@ -1,17 +1,17 @@
 import { Message } from 'discord.js';
 import moment from 'moment';
 import Config from '../types/Config';
-import { EconomyUser, PupeeTransaction } from '../types/Economy';
+import { ActionCooldownTypes, EconomyUser, PupeeTransaction } from '../types/Economy';
 import DataManager from './DataManager';
 export default class EconomyManager {
     private _userData: { [discordID: string]: EconomyUser };
     private _userDataManager: DataManager;
-    public initialBalance: number;
-    public maxTransactionsRecorded: number;
+    private _userCooldowns: { [discordID: string]: { [key in ActionCooldownTypes]?: number } } = {};
 
-    public constructor({ initialBalance, maxTransactionsRecorded }: Config['economy']) {
-        this.initialBalance = initialBalance;
-        this.maxTransactionsRecorded = maxTransactionsRecorded;
+    private _config: Config['economy'];
+
+    public constructor(config: Config['economy']) {
+        this._config = config;
 
         this._userDataManager = new DataManager(
             'data/economy/users.json',
@@ -24,14 +24,14 @@ export default class EconomyManager {
     /** This is used for when fields are missing. */
     private makeDefaultEconomyUser(): EconomyUser {
         const economyUser: EconomyUser = {
-            balance: this.initialBalance,
+            balance: this._config.initialBalance,
             transactions: [],
             lowestEverBalance: {
-                amount: this.initialBalance,
+                amount: this._config.initialBalance,
                 achieved: Date.now(),
             },
             highestEverBalance: {
-                amount: this.initialBalance,
+                amount: this._config.initialBalance,
                 achieved: Date.now(),
             },
             leftServer: false,
@@ -165,11 +165,11 @@ export default class EconomyManager {
 
         userA.transactions = [transaction, ...userA.transactions].slice(
             0,
-            this.maxTransactionsRecorded,
+            this._config.maxTransactionsRecorded,
         );
         userB.transactions = [transaction, ...userB.transactions].slice(
             0,
-            this.maxTransactionsRecorded,
+            this._config.maxTransactionsRecorded,
         );
         this.save();
     }
@@ -206,6 +206,32 @@ export default class EconomyManager {
                     id,
                 };
             });
+    }
+
+    /** Generate a random amount of Param Pupees
+     * @returns {number | { amount: number; saveCallback: () => void }}
+     * A number represing time until this can be called in seconds, or
+     * The amount mined, and a function to save that once applied externally.
+     */
+    public mine(id: string): number | { amount: number; saveCallback: () => void } {
+        const { min_yield: min, max_yield: max, cooldown_seconds: cooldown } = this._config.mine;
+
+        if (this._userCooldowns[id]?.[ActionCooldownTypes.mine]) {
+            const lastMined = this._userCooldowns[id][ActionCooldownTypes.mine]!;
+            return cooldown - Math.floor((Date.now() - lastMined) / 1000);
+        }
+
+        if (!this._userCooldowns[id]) {
+            this._userCooldowns[id] = {};
+        }
+        this._userCooldowns[id][ActionCooldownTypes.mine] = Date.now();
+        setTimeout(() => {
+            delete this._userCooldowns[id][ActionCooldownTypes.mine];
+        }, cooldown * 1000);
+
+        const amount = min + Math.floor(Math.random() * (max - min));
+
+        return { amount, saveCallback: () => this.save() };
     }
 
     public static insufficientBalance(

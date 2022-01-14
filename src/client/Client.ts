@@ -162,6 +162,26 @@ class Client extends DiscordClient {
         this.levels.on('backgroundValidation', logBackgroundValidationProgress);
 
         this.levels.validateAllUsersInBackground();
+
+        process.stdin.on('data', (data) => {
+            switch (data.toString().trim().replace('\n', '')) {
+                case 'hi':
+                    console.log('hello');
+                    break;
+                case 'memory':
+                    console.log(Client.memoryReport());
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+
+    private static memoryReport(): string {
+        let { heapTotal, heapUsed } = process.memoryUsage();
+        heapTotal /= 1024 ** 2;
+        heapUsed /= 1024 ** 2;
+        return `${Math.round(heapUsed)} / ${Math.round(heapTotal)} MB`;
     }
 
     private static fixedWidthNumber(num: number, maxWidth: number = 3): string {
