@@ -75,6 +75,17 @@ class Portfolio implements Command {
             messageEmbed.addField(`⛏️  Mining Stats`, miningStats.join('\n'), true);
         }
 
+        if (user.slotsStats.amountGambled > 0) {
+            const { timesWon, timesGambled, amountWon, amountGambled } = user.slotsStats;
+            const slotsStats: string[] = [];
+            slotsStats.push(`Times Gambled: **${timesGambled}**`);
+            slotsStats.push(`Times Won: **${timesWon}**`);
+            slotsStats.push(`Amount Gambled: **${amountGambled}**`);
+            slotsStats.push(`Amount Won: **${amountWon}**`);
+
+            messageEmbed.addField(`🎰  Slots Stats`, slotsStats.join('\n'), true);
+        }
+
         message.channel.send({ embeds: [messageEmbed] });
     }
 }
