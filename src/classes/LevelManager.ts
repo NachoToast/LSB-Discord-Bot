@@ -29,17 +29,27 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
         const startingData: { [index: string]: LevelUser } = {};
 
         try {
-            const legacyData: [
-                { id: string; level: number; xp: number },
-            ] = require('../archive/mee6.json');
+            const legacyData: {
+                id: string;
+                level: number;
+                xp: number;
+            }[] = require('../../archive/mee6.json');
 
-            console.log(`Loading Legacy Data`);
+            console.log(`Loading Legacy Data (${legacyData.length} Users)`);
 
             for (const { id, level, xp } of legacyData) {
                 startingData[id] = { level, xp, leftServer: undefined as any as boolean };
             }
         } catch (error) {
-            //
+            if (
+                !(
+                    error instanceof Error &&
+                    error.message.split('\n')[0] === `Cannot find module '../archive/mee6.json'`
+                )
+            ) {
+                console.log(`Error occurred loading legacy data, this should never happen.`);
+                console.log((error as Error).message.split('\n')[0]);
+            }
         }
 
         this._levelDataManager = new DataManager(
