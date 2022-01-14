@@ -28,6 +28,19 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
 
         const startingData: { [index: string]: LevelUser } = {};
 
+        try {
+            const legacyData: [
+                { id: string; level: number; xp: number },
+            ] = require('../archive/mee6.json');
+
+            for (const { id, level, xp } of legacyData) {
+                // @ts-ignore
+                startingData[id] = { level, xp };
+            }
+        } catch (error) {
+            //
+        }
+
         this._levelDataManager = new DataManager(
             'data/levels/users.json',
             JSON.stringify(startingData, undefined, 4),
