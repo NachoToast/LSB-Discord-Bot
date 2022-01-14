@@ -41,12 +41,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
                 startingData[id] = { level, xp, leftServer: undefined as any as boolean };
             }
         } catch (error) {
-            if (
-                !(
-                    error instanceof Error &&
-                    error.message.split('\n')[0] === `Cannot find module '../archive/mee6.json'`
-                )
-            ) {
+            if (!(error instanceof Error && error.message.includes('../../archive/mee6.json'))) {
                 console.log(`Error occurred loading legacy data, this should never happen.`);
                 console.log((error as Error).message.split('\n')[0]);
             }
