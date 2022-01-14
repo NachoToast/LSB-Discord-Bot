@@ -20,8 +20,6 @@ class Slots implements Command {
 
         const economyUser = client.economy.getOrMakeUser(message.author.id);
 
-        this.get5guildEmojis(message.guild!.emojis);
-
         if (economyUser.balance < amountToBet) {
             return EconomyManager.insufficientBalance(message, { have: economyUser.balance });
         }
@@ -32,7 +30,9 @@ class Slots implements Command {
 
         const setNumber = Math.floor(Math.random() * this._slotSets.length);
         const set = await this.get5guildEmojis(message.guild!.emojis);
+        console.log(set);
         while (set.length < 5) {
+            // if there aren't enough guild emojis, fill it up with normal emojis
             set.push(
                 this._slotSets[setNumber][
                     Math.floor(Math.random() * this._slotSets[setNumber].length)
@@ -64,7 +64,15 @@ class Slots implements Command {
 
     private async get5guildEmojis(emojis: GuildEmojiManager): Promise<string[]> {
         const guildEmojis = (await emojis.fetch()).map(({ name, id }) => `<:${name}:${id}>`);
-        return guildEmojis;
+        if (guildEmojis.length <= 5) return guildEmojis;
+        let chosenEmojis: string[] = [];
+        while (chosenEmojis.length < 5) {
+            const randomIndex = Math.floor(Math.random() * guildEmojis.length);
+            chosenEmojis.push(guildEmojis[randomIndex]);
+            guildEmojis.splice(randomIndex, 1);
+        }
+
+        return chosenEmojis;
     }
 
     private giveCuts(client: Client, amountWon: number) {
