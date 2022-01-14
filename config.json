@@ -9,7 +9,7 @@
             "cooldown_seconds": 1800,
             "min_yield": 10,
             "max_yield": 20,
-            "elonBonus": 50,
+            "elonBonus": 1,
             "nasaBonus": true,
             "hourBonus": true
         }
