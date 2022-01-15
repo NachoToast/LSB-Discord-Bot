@@ -17,6 +17,7 @@ export default class GuildConfigManager {
         const config: GuildConfig = {
             levelUpChannel: null,
             levelUpMessage: LevelUpThresholds.everyLevelPast20,
+            gamblingChannel: null,
         };
         return config;
     }

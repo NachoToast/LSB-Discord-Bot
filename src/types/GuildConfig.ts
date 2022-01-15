@@ -12,4 +12,5 @@ export enum LevelUpThresholds {
 export default interface GuildConfig {
     levelUpChannel: string | null;
     levelUpMessage: LevelUpThresholds;
+    gamblingChannel: string | null;
 }

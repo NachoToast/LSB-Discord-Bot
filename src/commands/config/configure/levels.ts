@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import Client from '../../../client/Client';
 import Command, { CommandParams } from '../../../client/Command';
-import GuildConfig, { LevelUpThresholds } from '../../../types/GuildConfig';
+import { LevelUpThresholds } from '../../../types/GuildConfig';
 
 class ConfigureLevels implements Command {
     public name: string = 'levels';
@@ -19,11 +19,6 @@ class ConfigureLevels implements Command {
             }\nTag the channel you want to send level up messages in, type \`skip\` to keep the same, or \`none\` to have no channel`,
         );
 
-        const newConfig: GuildConfig = {
-            levelUpChannel: existingConfig.levelUpChannel,
-            levelUpMessage: existingConfig.levelUpMessage,
-        };
-
         const filter = (collectedMessage: Message) => collectedMessage.author === message.author;
         const collector = message.channel.createMessageCollector({ filter, time: 25 * 1000 });
         collector.on('collect', async (m) => {
@@ -33,18 +28,17 @@ class ConfigureLevels implements Command {
                     collector.stop('got_result');
                     break;
                 case 'none':
-                    newConfig.levelUpChannel = null;
+                    existingConfig.levelUpChannel = null;
                     m.react('✅');
                     collector.stop('got_result');
                     break;
                 default:
                     if (Client.tagsChannel.test(m.content)) {
                         const filteredChannel = Client.filterChannel(m.content);
-                        console.log(filteredChannel);
                         if (await client.channels.fetch(filteredChannel)) {
                             m.react('✅');
                             collector.stop('got_result');
-                            newConfig.levelUpChannel = filteredChannel;
+                            existingConfig.levelUpChannel = filteredChannel;
                         } else {
                             m.react('❌');
                             mainMessage.edit(`That channel does not exist, please try again`);
@@ -74,7 +68,7 @@ class ConfigureLevels implements Command {
                         .map(
                             (e, i) =>
                                 `${i + 1}: ${e}${
-                                    e === newConfig.levelUpMessage ? ` (current)` : ''
+                                    e === existingConfig.levelUpMessage ? ` (current)` : ''
                                 }`,
                         )
                         .join('\n')}`,
@@ -94,7 +88,7 @@ class ConfigureLevels implements Command {
                         m.react('⏩');
                         collector2.stop('got_result');
                     } else {
-                        newConfig.levelUpMessage = levelUpOptions[Number(m.content) - 1];
+                        existingConfig.levelUpMessage = levelUpOptions[Number(m.content) - 1];
                         m.react('✅');
                         collector2.stop('got_result');
                     }
@@ -105,13 +99,13 @@ class ConfigureLevels implements Command {
                         secondaryMessage.edit(`❌ Didn't send a response in time`);
                     } else {
                         message.channel.send(
-                            newConfig.levelUpChannel &&
-                                newConfig.levelUpMessage !== LevelUpThresholds.none
-                                ? `Now sending level up messages for **${newConfig.levelUpMessage}** in <#${newConfig.levelUpChannel}>`
+                            existingConfig.levelUpChannel &&
+                                existingConfig.levelUpMessage !== LevelUpThresholds.none
+                                ? `Now sending level up messages for **${existingConfig.levelUpMessage}** in <#${existingConfig.levelUpChannel}>`
                                 : 'No longer sending level up messages to any channel',
                         );
 
-                        client.guildConfig.setGuildConfig(message.guildId!, newConfig);
+                        client.guildConfig.setGuildConfig(message.guildId!, existingConfig);
                     }
                 });
             }
