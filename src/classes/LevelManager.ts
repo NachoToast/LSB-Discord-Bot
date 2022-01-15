@@ -291,7 +291,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
 
     public async handleLevelUpMessage(member: GuildMember, newLevel: number): Promise<void> {
         this.messageAryan(member, newLevel);
-        const guildConfig = this._client.guildConfig.getGuildConfig(member.guild.id);
+        const guildConfig = this._client.guildConfig.getOrMakeGuildConfig(member.guild.id);
         if (!guildConfig || !guildConfig.levelUpChannel) return;
 
         switch (guildConfig.levelUpMessage) {

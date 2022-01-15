@@ -1,4 +1,4 @@
-import GuildConfig from '../types/GuildConfig';
+import GuildConfig, { LevelUpThresholds } from '../types/GuildConfig';
 import DataManager from './DataManager';
 
 export default class GuildConfigManager {
@@ -13,12 +13,26 @@ export default class GuildConfigManager {
         this._guildConfigData = JSON.parse(this._guildConfigDataManager.data);
     }
 
+    private get _defaultConfig(): GuildConfig {
+        const config: GuildConfig = {
+            levelUpChannel: null,
+            levelUpMessage: LevelUpThresholds.everyLevelPast20,
+        };
+        return config;
+    }
+
     private async save() {
         this._guildConfigDataManager.data = JSON.stringify(this._guildConfigData, undefined, 4);
     }
 
-    public getGuildConfig(guildId: string): GuildConfig | undefined {
-        return this._guildConfigData[guildId];
+    public getOrMakeGuildConfig(guildId: string): GuildConfig {
+        let existingConfig: GuildConfig | undefined = this._guildConfigData[guildId];
+        if (!existingConfig) {
+            existingConfig = this._defaultConfig;
+            this._guildConfigData[guildId] = existingConfig;
+            this.save();
+        }
+        return existingConfig;
     }
 
     public setGuildConfig(guildId: string, config: GuildConfig): void {

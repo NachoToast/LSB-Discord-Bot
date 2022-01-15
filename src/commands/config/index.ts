@@ -20,12 +20,7 @@ class Config implements Command {
             return message.channel.send(output.join('\n'));
         }
 
-        const config = client.guildConfig.getGuildConfig(message.guildId!);
-        if (!config) {
-            return message.channel.send(
-                `I don't have any config set up for this server (use **${chosenPrefix}configure** to set up)`,
-            );
-        }
+        const config = client.guildConfig.getOrMakeGuildConfig(message.guildId!);
 
         const outputConfig: string[] = [
             `Prefixes: \`${client.prefixes.join(`\`, \``)}\``,

@@ -3,10 +3,10 @@ import Client from '../../../client/Client';
 import Command, { CommandParams } from '../../../client/Command';
 import GuildConfig, { LevelUpThresholds } from '../../../types/GuildConfig';
 
-class ConfigureLevels implements Command {
-    public name: string = 'levels';
+class ConfigureSlots implements Command {
+    public name: string = 'slots';
     public description: string =
-        'Configure what channel to send level up notifications to, and when to send them';
+        'Configure what channel to allow slots and other gambling commands in';
     public async execute({ client, message }: CommandParams) {
         const existingConfig = client.guildConfig.getOrMakeGuildConfig(message.guildId!);
 
@@ -119,4 +119,4 @@ class ConfigureLevels implements Command {
     }
 }
 
-export default new ConfigureLevels();
+export default new ConfigureSlots();
