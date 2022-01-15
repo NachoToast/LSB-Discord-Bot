@@ -36,6 +36,10 @@ export default class GuildConfigManager {
         return existingConfig;
     }
 
+    public getGuildConfig(guildId: string): GuildConfig | null {
+        return this._guildConfigData[guildId] || null;
+    }
+
     public setGuildConfig(guildId: string, config: GuildConfig): void {
         this._guildConfigData[guildId] = config;
         this.save();

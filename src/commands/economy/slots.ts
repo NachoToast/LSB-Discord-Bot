@@ -1,4 +1,4 @@
-import { GuildEmojiManager } from 'discord.js';
+import { GuildEmojiManager, Snowflake } from 'discord.js';
 import { promisify } from 'util';
 import EconomyManager from '../../classes/EconomyManager';
 import Client from '../../client/Client';
@@ -10,7 +10,22 @@ class Slots implements Command {
     public name: string = 'slots';
     public description: string = 'Play some slots';
 
+    private _cooldowns: { [userId: Snowflake]: boolean } = {};
+
     public async execute({ client, message, args }: CommandParams) {
+        const guildConfig = client.guildConfig.getGuildConfig(message.guildId!);
+        if (guildConfig?.gamblingChannel) {
+            if (message.channelId !== guildConfig.gamblingChannel) {
+                return message.react('❌');
+            }
+        }
+
+        if (this._cooldowns[message.author.id] !== undefined) {
+            return message.channel.send(`Please wait for your current slots to finish`);
+        }
+
+        this._cooldowns[message.author.id] = true;
+
         if (!args[0] || !Number.isInteger(Number(args[0])) || Number(args[0]) <= 0) {
             return message.channel.send(`Please specify a valid amount of Param Pupees to bet`);
         }
@@ -50,13 +65,17 @@ class Slots implements Command {
 
         if (rolls[0] === rolls[1] && rolls[1] === rolls[2]) {
             amountWon = amountToBet * 125;
-            message.channel.send(`3x ${rolls[0]}, poggers! You won **${amountWon}** Param Pupees!`);
+            await message.channel.send(
+                `3x ${rolls[0]}, poggers! You won **${amountWon}** Param Pupees!`,
+            );
             this.giveCuts(client, amountWon);
         } else {
-            message.channel.send(`unlucky (-${amountToBet})`);
+            await message.channel.send(`unlucky (-${amountToBet})`);
         }
 
         client.economy.slots(economyUser, amountToBet, amountWon);
+
+        delete this._cooldowns[message.author.id];
     }
 
     private async get5guildEmojis(emojis: GuildEmojiManager): Promise<string[]> {
