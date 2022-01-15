@@ -1,6 +1,6 @@
-import Command, { CommandParams } from '../client/Command';
+import Command, { CommandParams } from '../../client/Command';
 import seedrandom from 'seedrandom';
-import Client from '../client/Client';
+import Client from '../../client/Client';
 
 class Bing implements Command {
     public name: string = 'bing';

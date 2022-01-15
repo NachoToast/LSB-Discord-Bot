@@ -1,4 +1,4 @@
-import Command, { CommandParams } from '../client/Command';
+import Command, { CommandParams } from '../../client/Command';
 
 class Ping implements Command {
     public readonly name: string = 'ping';
