@@ -44,6 +44,7 @@ export default class EconomyManager {
                 timesMined: 0,
                 nasaBonuses: 0,
                 hourBonuses: 0,
+                dayBonuses: 0,
                 elonBonuses: 0,
                 totalGainedFromMining: 0,
             },

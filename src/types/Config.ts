@@ -11,6 +11,7 @@ export default interface Config {
             elonBonus: number; // 0 to 100 (inclusive)
             nasaBonus: boolean;
             hourBonus: boolean;
+            dayBonus: boolean;
         };
         slots: {
             initialPot: number;

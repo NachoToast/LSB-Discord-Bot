@@ -24,12 +24,13 @@ class Work implements Command {
 
         let { amount, saveCallback } = didMine;
 
-        const { nasaBonus, elonBonus, hourBonus } = client.config.economy.mine;
+        const { nasaBonus, elonBonus, hourBonus, dayBonus } = client.config.economy.mine;
 
         const afterNasaBonus =
             nasaBonus && (await this.afterNasaBonus(client, message.channel.messages));
         const topOfTheHourBonus = hourBonus && this.topOfTheHourBonus();
         const muskBonus = elonBonus !== 0 && this.elonBonus(elonBonus);
+        const topOfTheDayBonus = dayBonus && this.dayBonus();
 
         const output: string[] = [
             `⛏️  You mined **${amount}** Param Pupee${amount !== 1 ? 's' : ''}`,
@@ -47,6 +48,12 @@ class Work implements Command {
             output.push(`🕛  **+10** Param Pupees (top of the hour bonus)`);
             netAmount += 10;
             user.miningStats.hourBonuses++;
+        }
+
+        if (topOfTheDayBonus) {
+            output.push(`📆  **+50** Param Pupees (top of the day bonus)`);
+            netAmount += 50;
+            user.miningStats.dayBonuses++;
         }
 
         if (muskBonus) {
@@ -82,6 +89,10 @@ class Work implements Command {
             .map((message) => message.author.id)
             .slice(0, 5);
         return lastXMessages.includes(client.devMode ? '240312568273436674' : '239562978037465088');
+    }
+
+    private dayBonus(): boolean {
+        return new Date().getHours() === 0;
     }
 
     private topOfTheHourBonus(): boolean {

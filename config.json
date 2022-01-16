@@ -11,7 +11,8 @@
             "max_yield": 20,
             "elonBonus": 1,
             "nasaBonus": true,
-            "hourBonus": true
+            "hourBonus": true,
+            "dayBonus": true
         },
         "slots": {
             "initialPot": 100

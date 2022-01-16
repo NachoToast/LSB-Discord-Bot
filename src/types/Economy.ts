@@ -16,6 +16,7 @@ export interface EconomyUser {
         timesMined: number;
         nasaBonuses: number;
         hourBonuses: number;
+        dayBonuses: number;
         elonBonuses: number;
         totalGainedFromMining: number;
     };
