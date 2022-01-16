@@ -12,9 +12,9 @@ class GetPot implements Command {
             client.economy.getPot(message.guildId!) || client.economy.defaultPot;
 
         message.channel.send(
-            `Current Pot: **${amount}** Param Pupees\nAttempts: **${attempts}**\nStarted: ${moment(
-                createdAt,
-            ).fromNow()}`,
+            `Current Pot: **${Math.floor(
+                amount - 0.02 * amount,
+            )}** Param Pupees\nAttempts: **${attempts}**\nStarted: ${moment(createdAt).fromNow()}`,
         );
     }
 }
