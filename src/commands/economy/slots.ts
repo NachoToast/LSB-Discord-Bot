@@ -65,10 +65,7 @@ class Slots implements Command {
         rolls.push(this.roll(emojiSet));
         await sentMessage.edit(rolls.join(''));
 
-        if (
-            (rolls[0] === rolls[1] && rolls[1] === rolls[2]) ||
-            message.author.id === '240312568273436674'
-        ) {
+        if (rolls[0] === rolls[1] && rolls[1] === rolls[2]) {
             await message.channel.send(
                 `3x ${rolls[0]}, poggers! You won **${pot.amount}** Param Pupees!`,
             );
