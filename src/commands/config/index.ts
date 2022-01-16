@@ -46,6 +46,7 @@ class Config implements Command {
 class ClientConfig implements Command {
     public name: string = 'clientconfig';
     public description: string = "See the bot's global config";
+    public aliases?: string[] = ['clientconf'];
     public async execute({ client, message }: CommandParams) {
         const config = client.config;
         if (!config.allowAnyoneToSeeConfig) return;

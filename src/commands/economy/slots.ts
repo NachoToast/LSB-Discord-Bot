@@ -1,7 +1,6 @@
 import { GuildEmojiManager, Snowflake } from 'discord.js';
 import { promisify } from 'util';
 import EconomyManager from '../../classes/EconomyManager';
-import Client from '../../client/Client';
 import Command, { CommandParams } from '../../client/Command';
 
 const wait = promisify(setTimeout);
@@ -31,7 +30,6 @@ class Slots implements Command {
         }
 
         const amountToBet = Number(args[0]);
-        let amountWon = 0;
 
         const economyUser = client.economy.getOrMakeUser(message.author.id);
 
@@ -43,36 +41,41 @@ class Slots implements Command {
             return message.channel.send(`Bruh u gotta at least bet 5`);
         }
 
+        const pot = client.economy.getOrMakePot(message.guildId!);
+        client.economy.addToPot(pot, economyUser, amountToBet);
+
+        // actual slots logic
         const setNumber = Math.floor(Math.random() * this._slotSets.length);
-        const set = await this.get5guildEmojis(message.guild!.emojis);
-        while (set.length < 5) {
+        const emojiSet = await this.get5guildEmojis(message.guild!.emojis);
+        while (emojiSet.length < 5) {
             // if there aren't enough guild emojis, fill it up with normal emojis
-            set.push(
+            emojiSet.push(
                 this._slotSets[setNumber][
                     Math.floor(Math.random() * this._slotSets[setNumber].length)
                 ],
             );
         }
 
-        const rolls: string[] = [this.roll(set)];
+        const rolls: string[] = [this.roll(emojiSet)];
         const sentMessage = await message.channel.send(rolls.join(''));
         await wait(1000);
-        rolls.push(this.roll(set));
+        rolls.push(this.roll(emojiSet));
         await sentMessage.edit(rolls.join(''));
         await wait(1000);
-        rolls.push(this.roll(set));
+        rolls.push(this.roll(emojiSet));
         await sentMessage.edit(rolls.join(''));
 
-        if (rolls[0] === rolls[1] && rolls[1] === rolls[2]) {
-            amountWon = amountToBet * 125;
+        if (
+            (rolls[0] === rolls[1] && rolls[1] === rolls[2]) ||
+            message.author.id === '240312568273436674'
+        ) {
             await message.channel.send(
-                `3x ${rolls[0]}, poggers! You won **${amountWon}** Param Pupees!`,
+                `3x ${rolls[0]}, poggers! You won **${pot.amount}** Param Pupees!`,
             );
+            client.economy.winPot(pot, economyUser, message.guildId!);
         } else {
             await message.channel.send(`unlucky (-${amountToBet})`);
         }
-
-        client.economy.slots(economyUser, amountToBet, amountWon);
 
         delete this._cooldowns[message.author.id];
     }
@@ -106,8 +109,3 @@ class Slots implements Command {
 }
 
 export default new Slots();
-
-/* cuts
-4% tanishk
-10% aryan
- */

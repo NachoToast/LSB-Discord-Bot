@@ -12,5 +12,8 @@ export default interface Config {
             nasaBonus: boolean;
             hourBonus: boolean;
         };
+        slots: {
+            initialPot: number;
+        };
     };
 }

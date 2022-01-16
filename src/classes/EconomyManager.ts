@@ -1,22 +1,26 @@
-import { Message } from 'discord.js';
+import { Message, Snowflake } from 'discord.js';
 import moment from 'moment';
 import Config from '../types/Config';
-import { ActionCooldownTypes, EconomyUser, PupeeTransaction } from '../types/Economy';
+import { ActionCooldownTypes, EconomyUser, Pot, PupeeTransaction } from '../types/Economy';
 import DataManager from './DataManager';
 export default class EconomyManager {
     private _userData: { [discordID: string]: EconomyUser };
-    private _userDataManager: DataManager;
+    private _userDataManager = new DataManager(
+        'data/economy/users.json',
+        JSON.stringify({}, undefined, 4),
+    );
     private _userCooldowns: { [discordID: string]: { [key in ActionCooldownTypes]?: number } } = {};
+
+    private _pots: { [guildId: Snowflake]: Pot } = {};
+    private _potDataManager = new DataManager(
+        'data/economy/pots.json',
+        JSON.stringify({}, undefined, 4),
+    );
 
     private _config: Config['economy'];
 
     public constructor(config: Config['economy']) {
         this._config = config;
-
-        this._userDataManager = new DataManager(
-            'data/economy/users.json',
-            JSON.stringify({}, undefined, 4),
-        );
 
         this._userData = JSON.parse(this._userDataManager.data);
     }
@@ -50,6 +54,15 @@ export default class EconomyManager {
             },
         };
         return economyUser;
+    }
+
+    public get defaultPot(): Pot {
+        const defaultPot: Pot = {
+            amount: this._config.slots.initialPot,
+            attempts: 0,
+            createdAt: Date.now(),
+        };
+        return defaultPot;
     }
 
     /** Gets a user if they exist, undefined otherwise. */
@@ -105,7 +118,7 @@ export default class EconomyManager {
     }
 
     /** Checks if the new balance of a user is higher or lower than their previously recorded highest/lowest. */
-    public userBalanceChecks(user: EconomyUser): void {
+    public userBalanceChecks(user: EconomyUser, save: boolean = true): void {
         let mutated = false;
         if (user.balance < user.lowestEverBalance.amount) {
             user.lowestEverBalance = { amount: user.balance, achieved: Date.now() };
@@ -115,7 +128,7 @@ export default class EconomyManager {
             mutated = true;
         }
 
-        if (mutated) this.save();
+        if (mutated && save) this.save();
     }
 
     /** Sets a user's balance, only admins should be able to use this.
@@ -208,6 +221,7 @@ export default class EconomyManager {
         return rank;
     }
 
+    /** @deprecated Use `addToPot` and `winPot` instead. */
     public slots(user: EconomyUser, amountGambled: number, amountWon?: number) {
         user.slotsStats.timesGambled++;
         user.slotsStats.amountGambled += amountGambled;
@@ -270,6 +284,46 @@ export default class EconomyManager {
                 this.userBalanceChecks(newUser);
             },
         };
+    }
+
+    public getPot(guildId: string): Pot | undefined {
+        return this._pots[guildId];
+    }
+
+    public getOrMakePot(guildId: string): Pot {
+        const existingPot = this.getPot(guildId);
+        if (!existingPot) {
+            const defaultPot = this.defaultPot;
+            this._pots[guildId] = defaultPot;
+            return defaultPot;
+        }
+        return existingPot;
+    }
+
+    public addToPot(pot: Pot, economyUser: EconomyUser, amount: number) {
+        pot.attempts++;
+        pot.amount += amount;
+        economyUser.balance -= amount;
+
+        economyUser.slotsStats.amountGambled += amount;
+        economyUser.slotsStats.timesGambled++;
+        this.userBalanceChecks(economyUser, false);
+        this.save();
+        this.savePots();
+    }
+
+    public winPot(pot: Pot, economyUser: EconomyUser, guildId: Snowflake) {
+        delete this._pots[guildId];
+        economyUser.balance += pot.amount;
+        economyUser.slotsStats.amountWon += pot.amount;
+        economyUser.slotsStats.timesWon++;
+        this.userBalanceChecks(economyUser, false);
+        this.save();
+        this.savePots();
+    }
+
+    private savePots() {
+        this._potDataManager.data = JSON.stringify(this._pots, undefined, 4);
     }
 
     public static insufficientBalance(

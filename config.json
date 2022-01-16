@@ -12,6 +12,9 @@
             "elonBonus": 1,
             "nasaBonus": true,
             "hourBonus": true
+        },
+        "slots": {
+            "initialPot": 100
         }
     }
 }

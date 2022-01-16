@@ -39,3 +39,9 @@ export interface PupeeTransaction {
 export enum ActionCooldownTypes {
     mine,
 }
+
+export interface Pot {
+    amount: number;
+    attempts: number;
+    createdAt: number;
+}
