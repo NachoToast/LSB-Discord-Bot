@@ -318,9 +318,11 @@ export default class EconomyManager {
 
     public winPot(pot: Pot, economyUser: EconomyUser, guildId: Snowflake) {
         delete this._pots[guildId];
-        economyUser.balance += pot.amount;
-        economyUser.lifetimeEarnings += pot.amount;
-        economyUser.slotsStats.amountWon += pot.amount;
+        const netAmount = Math.floor(pot.amount - 0.02 * pot.amount); // 20% house tax
+
+        economyUser.balance += netAmount;
+        economyUser.lifetimeEarnings += netAmount;
+        economyUser.slotsStats.amountWon += netAmount;
         economyUser.slotsStats.timesWon++;
         this.userBalanceChecks(economyUser, false);
         this.save();
