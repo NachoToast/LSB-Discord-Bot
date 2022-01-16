@@ -41,12 +41,11 @@ class SetBalance implements Command {
     public readonly description: string =
         "Set's the balance of a specified user (warning: this will clear their transactions and balance history)";
     public readonly aliases?: string[] | undefined = ['setbal', 'balset'];
+    public readonly adminOnly = true;
     public exampleUsage(chosenPrefix: string): string {
         return `${chosenPrefix}setbalance <@925613504118022204> 100`;
     }
     public async execute({ client, message, args }: CommandParams) {
-        if (!message.member?.permissions.has('ADMINISTRATOR')) return;
-
         if (args.length < 2) return message.channel.send(`Please specify user and amount`);
 
         const targetUser = await Client.getTargetUser(message, args);

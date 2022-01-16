@@ -1,4 +1,4 @@
-import { Client as DiscordClient, Collection, GuildMember, Message } from 'discord.js';
+import { Awaitable, Client as DiscordClient, Collection, GuildMember, Message } from 'discord.js';
 import Command, { CommandParams } from './Command';
 import intents from './Intents';
 import Config from '../types/Config';
@@ -200,7 +200,7 @@ class Client extends DiscordClient {
         console.log(error);
     }
 
-    private async onMessageCreate(message: Message) {
+    private async onMessageCreate(message: Message): Promise<any> {
         if (message.author.bot || !message.guild || !message.member) return;
 
         let chosenPrefix: string | null = null;
@@ -216,6 +216,10 @@ class Client extends DiscordClient {
         const foundCommand = this.commands.get(command) || this.aliases.get(command);
 
         if (foundCommand) {
+            if (foundCommand?.adminOnly && !message.member?.permissions.has('ADMINISTRATOR')) {
+                message.channel.send(`You need admin perms to do this`);
+                return;
+            }
             const params: CommandParams = { client: this, message, args, chosenPrefix };
             try {
                 foundCommand.execute(params);

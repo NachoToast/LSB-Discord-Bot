@@ -63,16 +63,13 @@ class Configure implements Command {
     public name: string = 'configure';
     public description: string = 'Configure a specific module for the server';
     public aliases?: string[] = ['setconf'];
+    public adminOnly = true;
     public exampleUsage(chosenPrefix: string): string {
         return `${chosenPrefix}configure levels`;
     }
     private configurable: string[] = [`levels`, `gambling`];
     public async execute(params: CommandParams) {
         const { args, message } = params;
-
-        if (!message.member?.permissions.has('ADMINISTRATOR')) {
-            return message.channel.send(`You need admin perms to do this`);
-        }
 
         if (!args.length) {
             return message.channel.send(
