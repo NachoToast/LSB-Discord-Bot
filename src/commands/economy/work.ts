@@ -50,9 +50,16 @@ class Work implements Command {
         }
 
         if (muskBonus) {
-            output.push(`💎  **+100** Param Pupees (Elon bonus)`);
-            netAmount += 100;
-            user.miningStats.elonBonuses++;
+            if (message.author.id === '294330990489239562') {
+                // hasidu has -100, everyone else has +100
+                output.push(`💎  **-100** Param Pupees (Elon bonus)`);
+                netAmount -= 100;
+                user.miningStats.elonBonuses++;
+            } else {
+                output.push(`💎  **+100** Param Pupees (Elon bonus)`);
+                netAmount += 100;
+                user.miningStats.elonBonuses++;
+            }
         }
 
         if (netAmount !== amount) {
