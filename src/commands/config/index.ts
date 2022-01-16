@@ -7,7 +7,7 @@ import gambling from './configure/gambling';
 class Config implements Command {
     public name: string = 'config';
     public description: string = "See this server's bot config";
-    public aliases?: string[] | undefined = ['conf', 'settings', 'guildconfig'];
+    public aliases?: string[] | undefined = ['conf', 'settings', 'guildconfig', 'guildconf'];
 
     public async execute({ client, message, args }: CommandParams) {
         const guildConfig = client.guildConfig.getOrMakeGuildConfig(message.guildId!);
