@@ -28,6 +28,9 @@ class Portfolio implements Command {
             `Balance: **${user.balance}** Param Pupee${
                 user.balance !== 1 ? 's' : ''
             } (Rank **#${client.economy.getBalanceRanking(user.balance)}**)`,
+            `Lifetime Earnings: **${user.lifetimeEarnings}** Param Pupee${
+                user.lifetimeEarnings !== 1 ? 's' : ''
+            }`,
             `Highest Ever Balance: **${user.highestEverBalance.amount}** Param Pupee${
                 user.highestEverBalance.amount !== 1 ? 's' : ''
             } (achieved ${moment(user.highestEverBalance.achieved).fromNow()})`,

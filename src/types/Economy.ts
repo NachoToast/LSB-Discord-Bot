@@ -1,5 +1,6 @@
 export interface EconomyUser {
     balance: number;
+    lifetimeEarnings: number;
     transactions: PupeeTransaction[];
     lowestEverBalance: {
         amount: number;

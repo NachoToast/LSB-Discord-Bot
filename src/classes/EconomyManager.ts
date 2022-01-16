@@ -29,6 +29,7 @@ export default class EconomyManager {
     private makeDefaultEconomyUser(): EconomyUser {
         const economyUser: EconomyUser = {
             balance: this._config.initialBalance,
+            lifetimeEarnings: 100,
             transactions: [],
             lowestEverBalance: {
                 amount: this._config.initialBalance,
@@ -112,6 +113,7 @@ export default class EconomyManager {
      */
     public updateUserBalance(user: EconomyUser, amountToAdd: number): number {
         user.balance += amountToAdd;
+        user.lifetimeEarnings += amountToAdd;
         this.userBalanceChecks(user);
 
         return user.balance;
@@ -137,6 +139,7 @@ export default class EconomyManager {
     public setUserBalance(user: EconomyUser, newBalance: number, clearData: boolean = false): void {
         user.balance = newBalance;
         if (clearData) {
+            user.lifetimeEarnings = newBalance;
             user.lowestEverBalance = { amount: user.balance, achieved: Date.now() };
             user.highestEverBalance = { amount: user.balance, achieved: Date.now() };
             user.transactions = [];
@@ -315,6 +318,7 @@ export default class EconomyManager {
     public winPot(pot: Pot, economyUser: EconomyUser, guildId: Snowflake) {
         delete this._pots[guildId];
         economyUser.balance += pot.amount;
+        economyUser.lifetimeEarnings += pot.amount;
         economyUser.slotsStats.amountWon += pot.amount;
         economyUser.slotsStats.timesWon++;
         this.userBalanceChecks(economyUser, false);

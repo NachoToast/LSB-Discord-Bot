@@ -69,6 +69,7 @@ class Work implements Command {
         user.miningStats.totalGainedFromMining += netAmount;
         user.balance += netAmount;
         user.miningStats.timesMined++;
+        user.lifetimeEarnings += netAmount;
         saveCallback(user);
 
         message.channel.send(output.join('\n'));
