@@ -68,7 +68,6 @@ class Slots implements Command {
             await message.channel.send(
                 `3x ${rolls[0]}, poggers! You won **${amountWon}** Param Pupees!`,
             );
-            this.giveCuts(client, amountWon);
         } else {
             await message.channel.send(`unlucky (-${amountToBet})`);
         }
@@ -89,20 +88,6 @@ class Slots implements Command {
         }
 
         return chosenEmojis;
-    }
-
-    private giveCuts(client: Client, amountWon: number) {
-        const cutToAryan = Math.floor(amountWon * 0.1);
-        const cutToTanishk = Math.floor(amountWon * 0.04);
-
-        const aryan = client.economy.getOrMakeUser('342562027539136513');
-        const tanishk = client.economy.getOrMakeUser('252953727126732800');
-
-        aryan.balance += cutToAryan;
-        tanishk.balance += cutToTanishk;
-        client.economy.userBalanceChecks(aryan);
-        client.economy.userBalanceChecks(tanishk);
-        client.economy.save();
     }
 
     private roll(slotset: string[]): string {
