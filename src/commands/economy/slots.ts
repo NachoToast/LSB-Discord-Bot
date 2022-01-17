@@ -23,8 +23,6 @@ class Slots implements Command {
             return message.channel.send('Please wait for your current slots to finish');
         }
 
-        this._cooldowns[message.author.id] = true;
-
         if (!args[0] || !Number.isInteger(Number(args[0])) || Number(args[0]) <= 0) {
             return message.channel.send('Please specify a valid amount of Param Pupees to bet');
         }
@@ -41,6 +39,7 @@ class Slots implements Command {
             return message.channel.send('Bruh u gotta at least bet 5');
         }
 
+        this._cooldowns[message.author.id] = true;
         const pot = client.economy.getOrMakePot(message.guildId!);
         client.economy.addToPot(pot, economyUser, amountToBet);
 
