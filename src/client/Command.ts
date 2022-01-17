@@ -14,6 +14,6 @@ export default interface Command {
     aliases?: string[];
     adminOnly?: boolean;
 
-    execute: (params: CommandParams) => Promise<any>;
+    execute: (params: CommandParams) => Promise<unknown>;
     exampleUsage?: (chosenPrefix: string) => string;
 }

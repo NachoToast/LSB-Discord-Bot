@@ -14,27 +14,24 @@ class Work implements Command {
             return message.channel.send(
                 `Still on cooldown (${
                     didMine > 60
-                        ? `${Math.floor(didMine / 60)} minute${
-                              Math.floor(didMine / 60) !== 1 ? 's' : ''
-                          } and ${didMine % 60} second${didMine % 60 !== 1 ? 's' : ''} remaining`
+                        ? `${Math.floor(didMine / 60)} minute${Math.floor(didMine / 60) !== 1 ? 's' : ''} and ${
+                              didMine % 60
+                          } second${didMine % 60 !== 1 ? 's' : ''} remaining`
                         : `${didMine} second${didMine !== 1 ? 's' : ''} remaining`
                 })`,
             );
         }
 
-        let { amount, saveCallback } = didMine;
+        const { amount, saveCallback } = didMine;
 
         const { nasaBonus, elonBonus, hourBonus, dayBonus } = client.config.economy.mine;
 
-        const afterNasaBonus =
-            nasaBonus && (await this.afterNasaBonus(client, message.channel.messages));
+        const afterNasaBonus = nasaBonus && (await this.afterNasaBonus(client, message.channel.messages));
         const topOfTheHourBonus = hourBonus && this.topOfTheHourBonus();
         const muskBonus = elonBonus !== 0 && this.elonBonus(elonBonus);
         const topOfTheDayBonus = dayBonus && this.dayBonus();
 
-        const output: string[] = [
-            `⛏️  You mined **${amount}** Param Pupee${amount !== 1 ? 's' : ''}`,
-        ];
+        const output: string[] = [`⛏️  You mined **${amount}** Param Pupee${amount !== 1 ? 's' : ''}`];
 
         let netAmount = amount;
         const user = client.economy.getOrMakeUser(message.author.id);

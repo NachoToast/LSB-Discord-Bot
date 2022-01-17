@@ -25,7 +25,7 @@ it('Tests if Bing or Chilling', async () => {
 
     const mockMessage = { channel: { send: mockSend }, member: nachoToast };
 
-    const params = { message: mockMessage } as any as CommandParams;
+    const params = { message: mockMessage } as unknown as CommandParams;
 
     // no target user
     const bing = new Bing();
