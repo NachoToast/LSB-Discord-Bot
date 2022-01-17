@@ -1,4 +1,4 @@
-import { Awaitable, Client as DiscordClient, Collection, GuildMember, Message } from 'discord.js';
+import { Client as DiscordClient, Collection, GuildMember, Message } from 'discord.js';
 import Command, { CommandParams } from './Command';
 import intents from './Intents';
 import Config from '../types/Config';
@@ -193,7 +193,7 @@ class Client extends DiscordClient {
         console.log(error);
     }
 
-    private async onMessageCreate(message: Message): Promise<any> {
+    private async onMessageCreate(message: Message): Promise<void> {
         if (message.author.bot || !message.guild || !message.member) return;
 
         let chosenPrefix: string | null = null;
