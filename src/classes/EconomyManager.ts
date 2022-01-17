@@ -71,10 +71,11 @@ export default class EconomyManager {
         const defaultUser = this.makeDefaultEconomyUser();
 
         let mutatedUser = false;
-        let userKeys = Object.keys(user);
+        const userKeys = Object.keys(user);
         for (const key of Object.keys(defaultUser) as (keyof EconomyUser)[]) {
             if (!userKeys.includes(key)) {
                 mutatedUser = true;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 user[key] = defaultUser[key];
                 // TODO: make this work for nested objects
@@ -115,7 +116,7 @@ export default class EconomyManager {
     }
 
     /** Checks if the new balance of a user is higher or lower than their previously recorded highest/lowest. */
-    public userBalanceChecks(user: EconomyUser, save: boolean = true): void {
+    public userBalanceChecks(user: EconomyUser, save = true): void {
         let mutated = false;
         if (user.balance < user.lowestEverBalance.amount) {
             user.lowestEverBalance = { amount: user.balance, achieved: Date.now() };
@@ -131,7 +132,7 @@ export default class EconomyManager {
     /** Sets a user's balance, only admins should be able to use this.
      * @param {boolean} clearData Whether to clear transaction logs and highest/lowest balance info.
      */
-    public setUserBalance(user: EconomyUser, newBalance: number, clearData: boolean = false): void {
+    public setUserBalance(user: EconomyUser, newBalance: number, clearData = false): void {
         user.balance = newBalance;
         if (clearData) {
             user.lifetimeEarnings = newBalance;
@@ -219,7 +220,7 @@ export default class EconomyManager {
     private readonly sortByBalance = (a: string, b: string): number =>
         this._userData[b].balance - this._userData[a].balance;
 
-    public getTopBalance(numUsers: number = 10): (EconomyUser & { id: string })[] {
+    public getTopBalance(numUsers = 10): (EconomyUser & { id: string })[] {
         // TODO: smarter way of doing this, so we only need to recalculate rankings on balance change,
         // otherwise we can get a stored list
         return Object.keys(this._userData)
