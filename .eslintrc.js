@@ -20,5 +20,6 @@ module.exports = {
         'no-var': 'error',
         'default-case-last': 'error',
         camelcase: 'error',
+        '@typescript-eslint/no-var-requires': 'off',
     },
 };
