@@ -4,7 +4,7 @@ A Discord.js bot for the LSB Discord server.
 
 # Roadmap
 
--   [ ] Economy system for "Param Pupees"
+-   [x] Economy system for "Param Pupees"
 -   [x] Levelling system like Mee6
 -   [x] Guild specific configuration
 
@@ -30,25 +30,47 @@ _Follow these instructions to set up your own development version of the bot._
 4. Copy the [`auth.example.json`](./auth.example.json) file.
     1. Rename the copy to [`auth.json`](./auth.json).
     2. Replace the [`devToken`](./auth.example.json#L3) field with the token of the bot you just registered.
-5. Open a terminal and use `yarn` to install dependencies.
+5. Open a terminal and use `yarn` (recommended) or `npm` to install dependencies.
 
     ```sh
+    # with yarn
     $ yarn
+
+    # with npm
+    $ npm install
     ```
 
 6. Start the bot in development using the provided script.
 
     ```sh
+    # with yarn
     $ yarn dev
+
+    # with npm
+    $ npm run dev
     ```
 
--   To start the bot in production, you can use `yarn start` or simply `node .`
-    -   Make sure you've run `yarn build` first, and have a `token` configured in [`config.json`](./config.json)
--   If you don't have `yarn` installed, you can install it via `npm` using `npm i -g yarn`
+-   To start the bot in production:
+
+    1.  Make sure you've run `yarn build` first, and have a `token` configured in [`auth.json`](./auth.json)
+    2.  Start the bot with one of the following commands:
+
+    ```sh
+    # with node
+    $ node .
+
+    # with yarn
+    $ yarn start
+
+    # with npm
+    $ npm run start
+    ```
+
+-   You can install `yarn` via `npm` using `npm i -g yarn`
 
 # Levels
 
-If you want user levels to carry over from when Mee6 was in use, you can run the porting script using `yarn port`.
+If you want user levels to carry over from when Mee6 was in use, you can run the porting script using `yarn port` or `npm run port`.
 
 You'll need to enter the ID of the server, and make sure Mee6 hasn't left it yet.
 
