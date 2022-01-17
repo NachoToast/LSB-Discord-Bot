@@ -1,9 +1,7 @@
 const https = require('https');
 const fs = require('fs');
 
-console.log(
-    `Mee6 level data porting here! Please paste your server ID into the console and hit enter.`,
-);
+console.log('Mee6 level data porting here! Please paste your server ID into the console and hit enter.');
 
 const serverRegexp = new RegExp(/^[0-9]{17,18}$/);
 
@@ -12,7 +10,7 @@ process.stdin.on('data', (data) => {
     if (serverRegexp.test(serverId)) {
         main(serverId);
     } else {
-        console.log(`That doesn't seem like a valid server ID`);
+        console.log("That doesn't seem like a valid server ID");
     }
 });
 
@@ -29,12 +27,12 @@ function main(serverId) {
             if (res.statusCode !== 404) {
                 console.log(`Got unknown status code: ${res.statusCode}`);
             } else {
-                console.log(`Couldn't find that server on Mee6 records, is Mee6 still in it?`);
+                console.log("Couldn't find that server on Mee6 records, is Mee6 still in it?");
             }
             process.exit();
         }
 
-        let data = ``;
+        let data = '';
 
         res.on('data', (d) => {
             data += d;
