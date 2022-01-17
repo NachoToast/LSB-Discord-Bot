@@ -1,37 +1,45 @@
-import { Collection } from 'discord.js';
+import { Collection, Message } from 'discord.js';
+import Client from '../../client/Client';
 import { CommandParams } from '../../client/Command';
 import { List } from './list';
 
-it('Lists client commands', () => {
-    let sentMessage = '';
-    const mockSend = jest.fn((x) => (sentMessage = x));
+describe('!list', () => {
+    const send = jest.fn((e) => console.log(e));
 
-    const mockCommands = new Collection();
-    mockCommands.set('fakeA', {
+    const commands = new Collection();
+    commands.set('fakeA', {
         name: 'fakeA',
         description: 'fakeDescA',
+        aliases: ['fakeAlias1', 'fakeAlias2'],
     });
-    mockCommands.set('fakeB', {
+    commands.set('fakeB', {
         name: 'fakeB',
         description: 'fakeDescB',
     });
 
-    const mockClient = { commands: mockCommands };
-    const mockMessage = { channel: { send: mockSend } };
+    const client = { commands } as Client;
+    const message = { channel: { send } } as unknown as Message;
 
     const params = {
-        client: mockClient,
-        message: mockMessage,
+        client,
+        message,
         chosenPrefix: '!',
-    } as unknown as CommandParams;
+    } as CommandParams;
 
     const list = new List();
-    list.execute(params);
-    expect(mockSend).toBeCalledTimes(1);
 
-    expect(sentMessage).toContain('fakeA');
-    expect(sentMessage).toContain('fakeB');
-    expect(sentMessage).toContain('fakeDescA');
-    expect(sentMessage).toContain('fakeDescB');
-    expect(sentMessage).toContain('2');
+    it('should contain command names', async () => {
+        await list.execute(params);
+        expect(send).toBeCalledWith(expect.stringContaining('fakeA') && expect.stringContaining('fakeB'));
+    });
+
+    it('should contain command descriptions', async () => {
+        await list.execute(params);
+        expect(send).toBeCalledWith(expect.stringContaining('fakeDescA') && expect.stringContaining('fakeDescB'));
+    });
+
+    it('should list command aliases', async () => {
+        await list.execute(params);
+        expect(send).toBeCalledWith(expect.stringContaining('fakeAlias1') && expect.stringContaining('fakeAlias2'));
+    });
 });
