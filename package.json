@@ -11,7 +11,8 @@
         "build": "tsc",
         "start": "node .",
         "port": "node ./scripts/portMee6Data.js",
-        "test": "jest"
+        "test": "jest",
+        "check-all": "yarn test && yarn lint && yarn typecheck"
     },
     "devDependencies": {
         "@babel/core": "^7.16.7",
