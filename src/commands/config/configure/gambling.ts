@@ -12,7 +12,7 @@ class ConfigureGambling implements Command {
             `${
                 existingConfig.gamblingChannel
                     ? `Current gambling channel: <#${existingConfig.gamblingChannel}>`
-                    : `No current gambling channel`
+                    : 'No current gambling channel'
             }\nTag the channel you want to send level up messages in, type \`skip\` to keep the same, or \`none\` to have no channel`,
         );
 
@@ -38,7 +38,7 @@ class ConfigureGambling implements Command {
                             collector.stop('got_result');
                         } else {
                             m.react('❌');
-                            mainMessage.edit(`That channel does not exist, please try again`);
+                            mainMessage.edit('That channel does not exist, please try again');
                         }
                     }
             }
@@ -46,7 +46,7 @@ class ConfigureGambling implements Command {
 
         collector.on('end', async (_, reason) => {
             if (reason !== 'got_result') {
-                mainMessage.edit(`❌ Didn't send a response in time`);
+                mainMessage.edit('❌ Didn\'t send a response in time');
             } else {
                 message.channel.send(
                     existingConfig.gamblingChannel

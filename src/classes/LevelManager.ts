@@ -35,7 +35,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
             }
         } catch (error) {
             if (!(error instanceof Error && error.message.includes('../../archive/mee6.json'))) {
-                console.log(`Error occurred loading legacy data, this should never happen.`);
+                console.log('Error occurred loading legacy data, this should never happen.');
                 console.log((error as Error).message.split('\n')[0]);
             }
         }
@@ -110,7 +110,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
             return true;
         } catch (error) {
             if (!(error instanceof DiscordAPIError) || error.message !== 'Unknown Member') {
-                console.log(`Uknown error occurred trying to fetch user`);
+                console.log('Uknown error occurred trying to fetch user');
             } else {
                 if (this._levelData[id]) {
                     this._levelData[id].leftServer = true;
@@ -249,7 +249,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
             }
 
             const aryan: User = await this._client.users.fetch(
-                this._client.devMode ? `240312568273436674` : '342562027539136513',
+                this._client.devMode ? '240312568273436674' : '342562027539136513',
             );
             const dmChannel = await aryan.createDM();
 

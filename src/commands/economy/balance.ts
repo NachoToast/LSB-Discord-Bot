@@ -42,7 +42,7 @@ class SetBalance implements Command {
         return `${chosenPrefix}setbalance <@925613504118022204> 100`;
     }
     public async execute({ client, message, args }: CommandParams) {
-        if (args.length < 2) return message.channel.send(`Please specify user and amount`);
+        if (args.length < 2) return message.channel.send('Please specify user and amount');
 
         const targetUser = await Client.getTargetUser(message, args);
         const targetAmount = Number(args[1]);
@@ -68,7 +68,7 @@ class Balance implements Command {
     public async execute({ client, message, args }: CommandParams) {
         const targetUser = await Client.getTargetUser(message, args);
         if (!targetUser) {
-            return message.channel.send(`That user doesn't exist, or isn't in the server`);
+            return message.channel.send('That user doesn\'t exist, or isn\'t in the server');
         }
 
         let user = client.economy.getUser(targetUser.id);

@@ -59,7 +59,7 @@ class Client extends DiscordClient {
                 } else if (error.message.includes('auth.json')) {
                     console.log(`Missing ${Colours.FgMagenta}auth.json${Colours.Reset} file in root directory`);
                 } else {
-                    console.log(`Unknown error occurred loading config and auth files`);
+                    console.log('Unknown error occurred loading config and auth files');
                     console.log(error);
                 }
             }
@@ -102,7 +102,7 @@ class Client extends DiscordClient {
                 console.log(duplicateCommandsMessage.join('\n'));
             }
         } catch (error) {
-            console.log(`Unknown error occurred loading commands`);
+            console.log('Unknown error occurred loading commands');
             console.log(error);
             process.exit();
         }
@@ -123,7 +123,7 @@ class Client extends DiscordClient {
             })`,
         );
 
-        this.user?.setActivity(`Masterchef`, {
+        this.user?.setActivity('Masterchef', {
             type: 'STREAMING',
             url: 'https://www.twitch.tv/xqcow',
         });
@@ -147,7 +147,7 @@ class Client extends DiscordClient {
                 const percentage = Math.floor((100 * current) / total);
 
                 this.logger.log(
-                    `levelManager`,
+                    'levelManager',
                     `[${Colours.FgCyan}LevelManager${Colours.Reset}] Background User Validation [${Client.progressBar(
                         percentage,
                     )}] ${Client.fixedWidthNumber(percentage)}%`,
@@ -210,7 +210,7 @@ class Client extends DiscordClient {
 
         if (foundCommand) {
             if (foundCommand?.adminOnly && !message.member?.permissions.has('ADMINISTRATOR')) {
-                message.channel.send(`You need admin perms to do this`);
+                message.channel.send('You need admin perms to do this');
                 return;
             }
             const params: CommandParams = { client: this, message, args, chosenPrefix };
@@ -222,7 +222,7 @@ class Client extends DiscordClient {
                 if (error instanceof Error) {
                     message.channel.send(`An error occurred executing that command: ${error.message}`);
                 } else {
-                    message.channel.send(`An unknown error occurred executing that command`);
+                    message.channel.send('An unknown error occurred executing that command');
                 }
             }
         }
@@ -256,11 +256,11 @@ class Client extends DiscordClient {
     }
 
     public static async horribleError(message: Message, args: string[], extraInfo?: string[]) {
-        let msg = `⚠️ Something terribly wrong happened, you should never see this error.`;
+        let msg = '⚠️ Something terribly wrong happened, you should never see this error.';
 
         const nachoToast: GuildMember | null = (await message.guild?.members.fetch('240312568273436674')) ?? null;
         if (!nachoToast) {
-            msg += `\nPlease contact NachoToast`;
+            msg += '\nPlease contact NachoToast';
         } else {
             const dmChannel = await nachoToast.createDM();
             dmChannel.sendTyping();

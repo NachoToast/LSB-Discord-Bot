@@ -3,15 +3,15 @@ import { CommandParams } from '../../client/Command';
 import { List } from './list';
 
 it('Lists client commands', () => {
-    let sentMessage = ``;
+    let sentMessage = '';
     const mockSend = jest.fn((x) => (sentMessage = x));
 
     const mockCommands = new Collection();
-    mockCommands.set(`fakeA`, {
+    mockCommands.set('fakeA', {
         name: 'fakeA',
         description: 'fakeDescA',
     });
-    mockCommands.set(`fakeB`, {
+    mockCommands.set('fakeB', {
         name: 'fakeB',
         description: 'fakeDescB',
     });
@@ -29,9 +29,9 @@ it('Lists client commands', () => {
     list.execute(params);
     expect(mockSend).toBeCalledTimes(1);
 
-    expect(sentMessage).toContain(`fakeA`);
-    expect(sentMessage).toContain(`fakeB`);
-    expect(sentMessage).toContain(`fakeDescA`);
-    expect(sentMessage).toContain(`fakeDescB`);
-    expect(sentMessage).toContain(`2`);
+    expect(sentMessage).toContain('fakeA');
+    expect(sentMessage).toContain('fakeB');
+    expect(sentMessage).toContain('fakeDescA');
+    expect(sentMessage).toContain('fakeDescB');
+    expect(sentMessage).toContain('2');
 });

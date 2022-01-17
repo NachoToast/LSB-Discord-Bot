@@ -19,21 +19,21 @@ class Config implements Command {
             return message.channel.send(output.join('\n'));
         }
 
-        const outputConfig: string[] = [`Prefixes: \`${client.prefixes.join(`\`, \``)}\``, `**Level Config:**`];
+        const outputConfig: string[] = [`Prefixes: \`${client.prefixes.join('`, `')}\``, '**Level Config:**'];
 
         if (guildConfig.levelUpChannel && guildConfig.levelUpMessage !== LevelUpThresholds.none) {
             outputConfig.push(
                 `Sending level up messages for **${guildConfig.levelUpMessage}** in <#${guildConfig.levelUpChannel}>`,
             );
         } else {
-            outputConfig.push(`Not sending level up messages`);
+            outputConfig.push('Not sending level up messages');
         }
 
-        outputConfig.push(`**Gambling Config:**`);
+        outputConfig.push('**Gambling Config:**');
         if (guildConfig.gamblingChannel) {
             outputConfig.push(`Gambling channel: <#${guildConfig.gamblingChannel}>`);
         } else {
-            outputConfig.push(`No gambling channel`);
+            outputConfig.push('No gambling channel');
         }
 
         message.channel.send(outputConfig.join('\n'));
@@ -64,7 +64,7 @@ class Configure implements Command {
     public exampleUsage(chosenPrefix: string): string {
         return `${chosenPrefix}configure levels`;
     }
-    private configurable: string[] = [`levels`, `gambling`];
+    private configurable: string[] = ['levels', 'gambling'];
     public async execute(params: CommandParams) {
         const { args, message } = params;
 
@@ -82,7 +82,7 @@ class Configure implements Command {
             default:
                 return message.channel.send(
                     Client.filterMentions(
-                        `Option '${args[0]}' not recognized, try one of: \`${this.configurable.join(`\`, \``)}\``,
+                        `Option '${args[0]}' not recognized, try one of: \`${this.configurable.join('`, `')}\``,
                     ),
                 );
         }

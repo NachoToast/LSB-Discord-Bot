@@ -5,7 +5,7 @@ class Raise implements Command {
     public description = 'See if you can get a raise';
 
     public async execute({ message }: CommandParams) {
-        message.channel.send(`No raise for you`);
+        message.channel.send('No raise for you');
     }
 }
 

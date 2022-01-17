@@ -2,7 +2,7 @@ import { CommandParams } from '../../client/Command';
 import { Ping } from './ping';
 
 it('Gets client latency', () => {
-    let sentMessage = ``;
+    let sentMessage = '';
     const mockSend = jest.fn((x) => (sentMessage = x));
 
     const mockClient = { ws: { ping: 123 } };
@@ -14,7 +14,7 @@ it('Gets client latency', () => {
     ping.execute(params);
     expect(mockSend).toBeCalledTimes(1);
 
-    expect(sentMessage).toContain(`123ms`);
+    expect(sentMessage).toContain('123ms');
 
     // we do all this to make sure the API latency is accurate,
     // because it doesn't always come out as exactly 1000ms

@@ -11,7 +11,7 @@ class Rank implements Command {
         const targetUser = await Client.getTargetUser(message, args);
 
         if (!targetUser) {
-            return message.channel.send(`Can't find that user lmoa`);
+            return message.channel.send('Can\'t find that user lmoa');
         }
 
         let user = client.levels.getUser(targetUser.id);
