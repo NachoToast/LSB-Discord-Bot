@@ -26,6 +26,7 @@ class Slots implements Command {
         this._cooldowns[message.author.id] = true;
 
         if (!args[0] || !Number.isInteger(Number(args[0])) || Number(args[0]) <= 0) {
+            delete this._cooldowns[message.author.id];
             return message.channel.send(`Please specify a valid amount of Param Pupees to bet`);
         }
 
@@ -34,10 +35,12 @@ class Slots implements Command {
         const economyUser = client.economy.getOrMakeUser(message.author.id);
 
         if (economyUser.balance < amountToBet) {
+            delete this._cooldowns[message.author.id];
             return EconomyManager.insufficientBalance(message, { have: economyUser.balance });
         }
 
         if (amountToBet < 5) {
+            delete this._cooldowns[message.author.id];
             return message.channel.send(`Bruh u gotta at least bet 5`);
         }
 
