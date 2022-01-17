@@ -5,17 +5,11 @@ import { ActionCooldownTypes, EconomyUser, Pot, PupeeTransaction } from '../type
 import DataManager from './DataManager';
 export default class EconomyManager {
     private _userData: { [discordID: string]: EconomyUser };
-    private _userDataManager = new DataManager(
-        'data/economy/users.json',
-        JSON.stringify({}, undefined, 4),
-    );
+    private _userDataManager = new DataManager('data/economy/users.json', JSON.stringify({}, undefined, 4));
     private _userCooldowns: { [discordID: string]: { [key in ActionCooldownTypes]?: number } } = {};
 
     private _pots: { [guildId: Snowflake]: Pot } = {};
-    private _potDataManager = new DataManager(
-        'data/economy/pots.json',
-        JSON.stringify({}, undefined, 4),
-    );
+    private _potDataManager = new DataManager('data/economy/pots.json', JSON.stringify({}, undefined, 4));
 
     private _config: Config['economy'];
 
@@ -153,10 +147,7 @@ export default class EconomyManager {
     }
 
     /** Makes a string detailing a transaction. */
-    public transactionReport(
-        user: EconomyUser,
-        { toID, fromID, amount, timestamp }: PupeeTransaction,
-    ): string {
+    public transactionReport(user: EconomyUser, { toID, fromID, amount, timestamp }: PupeeTransaction): string {
         const timestampS = moment(timestamp).fromNow();
         const absAmount = Math.abs(amount);
         let output = `${timestampS[0].toUpperCase() + timestampS.slice(1)}: `;
@@ -164,19 +155,11 @@ export default class EconomyManager {
         if (userTo === user) {
             // someone either paid user, or took from user
             if (amount < 0)
-                output += `Had **${absAmount}** Param Pupee${
-                    absAmount !== 1 ? 's' : ''
-                } yoinked by <@${fromID}>`;
-            else
-                output += `Received **${amount}** Param Pupee${
-                    amount !== 1 ? 's' : ''
-                } from <@${fromID}>`;
+                output += `Had **${absAmount}** Param Pupee${absAmount !== 1 ? 's' : ''} yoinked by <@${fromID}>`;
+            else output += `Received **${amount}** Param Pupee${amount !== 1 ? 's' : ''} from <@${fromID}>`;
         } else {
             // user paid, or stole from
-            if (amount < 0)
-                output += `Stole **${absAmount}** Param Pupee${
-                    absAmount !== 1 ? 's' : ''
-                } from <@${toID}>`;
+            if (amount < 0) output += `Stole **${absAmount}** Param Pupee${absAmount !== 1 ? 's' : ''} from <@${toID}>`;
             else output += `Gave **${amount}** Param Pupee${amount !== 1 ? 's' : ''} to <@${toID}>`;
         }
         return output;
@@ -197,14 +180,8 @@ export default class EconomyManager {
         const userA = this.getOrMakeUser(personA);
         const userB = this.getOrMakeUser(personB);
 
-        userA.transactions = [transaction, ...userA.transactions].slice(
-            0,
-            this._config.maxTransactionsRecorded,
-        );
-        userB.transactions = [transaction, ...userB.transactions].slice(
-            0,
-            this._config.maxTransactionsRecorded,
-        );
+        userA.transactions = [transaction, ...userA.transactions].slice(0, this._config.maxTransactionsRecorded);
+        userB.transactions = [transaction, ...userB.transactions].slice(0, this._config.maxTransactionsRecorded);
         this.save();
     }
 
@@ -261,9 +238,7 @@ export default class EconomyManager {
      * A number represing time until this can be called in seconds, or
      * The amount mined, and a function to save that once applied externally.
      */
-    public mine(
-        id: string,
-    ): number | { amount: number; saveCallback: (newUser: EconomyUser) => void } {
+    public mine(id: string): number | { amount: number; saveCallback: (newUser: EconomyUser) => void } {
         const { min_yield: min, max_yield: max, cooldown_seconds: cooldown } = this._config.mine;
 
         if (this._userCooldowns[id]?.[ActionCooldownTypes.mine]) {
@@ -333,10 +308,7 @@ export default class EconomyManager {
         this._potDataManager.data = JSON.stringify(this._pots, undefined, 4);
     }
 
-    public static insufficientBalance(
-        message: Message,
-        { have, need }: { have?: number; need?: number },
-    ): void {
+    public static insufficientBalance(message: Message, { have, need }: { have?: number; need?: number }): void {
         let msg = `You don't have enough Param Pupees to do that`;
         if (have !== undefined && need !== undefined) {
             msg += ` (have ${have}, need ${need})`;

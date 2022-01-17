@@ -2,9 +2,9 @@ import { MessageEmbed } from 'discord.js';
 import Command, { CommandParams } from '../../client/Command';
 
 export class Levels implements Command {
-    public name: string = 'level';
+    public name = 'level';
     public aliases?: string[] | undefined = ['levels', 'leveltop'];
-    public description: string = 'List the 10 highest levelled users in the server';
+    public description = 'List the 10 highest levelled users in the server';
     public async execute({ client, message }: CommandParams) {
         if (client.levels.validationProgress !== 100) {
             message.channel.send(
@@ -26,9 +26,7 @@ export class Levels implements Command {
             if (!top10[i]) continue;
             const { id, level } = top10[i];
 
-            desc.push(
-                `${i < 3 ? Levels.medalGiver(i) + ' ' : `${i + 1}.`} <@${id}> - Level **${level}**`,
-            );
+            desc.push(`${i < 3 ? Levels.medalGiver(i) + ' ' : `${i + 1}.`} <@${id}> - Level **${level}**`);
         }
 
         messageEmbed.setDescription('\u200b\n' + desc.join('\n\n'));

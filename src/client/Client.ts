@@ -27,8 +27,7 @@ class Client extends DiscordClient {
 
     public static readonly tagsChannel = new RegExp(/<#[0-9]{17,18}>/);
     private static readonly decorators = new RegExp(/[<#!&>]/g);
-    public static readonly filterChannel = (channelTag: string): string =>
-        channelTag.replaceAll(Client.decorators, '');
+    public static readonly filterChannel = (channelTag: string): string => channelTag.replaceAll(Client.decorators, '');
 
     private readonly logger = new Logger();
     public readonly economy: EconomyManager;
@@ -56,13 +55,9 @@ class Client extends DiscordClient {
         } catch (error) {
             if (error instanceof Error) {
                 if (error.message.includes('config.json')) {
-                    console.log(
-                        `Missing ${Colours.FgMagenta}config.json${Colours.Reset} file in root directory`,
-                    );
+                    console.log(`Missing ${Colours.FgMagenta}config.json${Colours.Reset} file in root directory`);
                 } else if (error.message.includes('auth.json')) {
-                    console.log(
-                        `Missing ${Colours.FgMagenta}auth.json${Colours.Reset} file in root directory`,
-                    );
+                    console.log(`Missing ${Colours.FgMagenta}auth.json${Colours.Reset} file in root directory`);
                 } else {
                     console.log(`Unknown error occurred loading config and auth files`);
                     console.log(error);
@@ -75,7 +70,7 @@ class Client extends DiscordClient {
         try {
             process.stdout.write(`Loading ${commands.length} Commands: `); // use stdout because console appends newline
 
-            let duplicateCommandsMessage: string[] = [];
+            const duplicateCommandsMessage: string[] = [];
             const colourCycler = colourCycle();
 
             commands.map((command) => {
@@ -89,11 +84,11 @@ class Client extends DiscordClient {
                     for (const alias of command.aliases) {
                         if (this.aliases.get(alias) !== undefined) {
                             duplicateCommandsMessage.push(
-                                `Alias ${Colours.Bright}${alias}${Colours.Reset} of the ${colour}${
-                                    command.name
-                                }${Colours.Reset} command is already in use by the ${
-                                    Colours.Bright
-                                }${this.aliases.get(alias)?.name}${Colours.Reset} command`,
+                                `Alias ${Colours.Bright}${alias}${Colours.Reset} of the ${colour}${command.name}${
+                                    Colours.Reset
+                                } command is already in use by the ${Colours.Bright}${this.aliases.get(alias)?.name}${
+                                    Colours.Reset
+                                } command`,
                             );
                         } else {
                             this.aliases.set(alias, command);
@@ -123,9 +118,9 @@ class Client extends DiscordClient {
 
     private async onReady() {
         console.log(
-            `${this.user?.tag} logged in (${Colours.FgMagenta}${
-                (Date.now() - this._startTime) / 1000
-            }s${Colours.Reset})`,
+            `${this.user?.tag} logged in (${Colours.FgMagenta}${(Date.now() - this._startTime) / 1000}s${
+                Colours.Reset
+            })`,
         );
 
         this.user?.setActivity(`Masterchef`, {
@@ -153,9 +148,7 @@ class Client extends DiscordClient {
 
                 this.logger.log(
                     `levelManager`,
-                    `[${Colours.FgCyan}LevelManager${
-                        Colours.Reset
-                    }] Background User Validation [${Client.progressBar(
+                    `[${Colours.FgCyan}LevelManager${Colours.Reset}] Background User Validation [${Client.progressBar(
                         percentage,
                     )}] ${Client.fixedWidthNumber(percentage)}%`,
                 );
@@ -187,11 +180,11 @@ class Client extends DiscordClient {
         return `${Math.round(heapUsed)} / ${Math.round(heapTotal)} MB`;
     }
 
-    private static fixedWidthNumber(num: number, maxWidth: number = 3): string {
+    private static fixedWidthNumber(num: number, maxWidth = 3): string {
         return ' '.repeat(maxWidth - num.toString().length) + num;
     }
 
-    private static progressBar(percentage: number, length: number = 30): string {
+    private static progressBar(percentage: number, length = 30): string {
         const amountFilled = Math.floor(length * (percentage / 100));
         return '■'.repeat(amountFilled) + ' '.repeat(length - amountFilled);
     }
@@ -227,9 +220,7 @@ class Client extends DiscordClient {
                 console.log(`An error occurred executing the ${foundCommand.name} command:`);
                 console.log(error);
                 if (error instanceof Error) {
-                    message.channel.send(
-                        `An error occurred executing that command: ${error.message}`,
-                    );
+                    message.channel.send(`An error occurred executing that command: ${error.message}`);
                 } else {
                     message.channel.send(`An unknown error occurred executing that command`);
                 }
@@ -237,7 +228,7 @@ class Client extends DiscordClient {
         }
     }
 
-    public static filterMentions(message: string, allowUserMentions: boolean = false): string {
+    public static filterMentions(message: string, allowUserMentions = false): string {
         let newMessage = message
             .replace(this.tagsEveryone, 'everyone')
             .replace(this.tagsHere, 'here')
@@ -251,12 +242,11 @@ class Client extends DiscordClient {
     public static async getTargetUser(
         message: Message,
         args: string[],
-        allowBots: boolean = false,
+        allowBots = false,
     ): Promise<GuildMember | null> {
         try {
             if (!args.length || !this.tagsUser.test(args[0])) return message.member;
-            const member =
-                (await message.guild?.members?.fetch(args[0].replace(/[<@!>]/g, ''))) ?? null;
+            const member = (await message.guild?.members?.fetch(args[0].replace(/[<@!>]/g, ''))) ?? null;
             if (allowBots) return member;
             if (member?.user.bot) return null;
             return member;
@@ -268,8 +258,7 @@ class Client extends DiscordClient {
     public static async horribleError(message: Message, args: string[], extraInfo?: string[]) {
         let msg = `⚠️ Something terribly wrong happened, you should never see this error.`;
 
-        const nachoToast: GuildMember | null =
-            (await message.guild?.members.fetch('240312568273436674')) ?? null;
+        const nachoToast: GuildMember | null = (await message.guild?.members.fetch('240312568273436674')) ?? null;
         if (!nachoToast) {
             msg += `\nPlease contact NachoToast`;
         } else {

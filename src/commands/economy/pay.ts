@@ -30,9 +30,9 @@ class Pay implements Command {
             return message.channel.send(`You can't pay yourself dumbass`);
         }
 
-        let amountToPay = Number(args[1]);
+        const amountToPay = Number(args[1]);
 
-        let payer = client.economy.getOrMakeUser(message.author.id);
+        const payer = client.economy.getOrMakeUser(message.author.id);
 
         if (payer.balance < amountToPay) {
             return EconomyManager.insufficientBalance(message, { have: payer.balance });
@@ -49,11 +49,7 @@ class Pay implements Command {
 
         client.economy.addUserTransaction(message.author.id, amountToPay, targetedUser.id);
 
-        message.channel.send(
-            `Paid ${amountToPay} Param Pupee${amountToPay != 1 ? 's' : ''} to <@${
-                targetedUser.id
-            }>`,
-        );
+        message.channel.send(`Paid ${amountToPay} Param Pupee${amountToPay != 1 ? 's' : ''} to <@${targetedUser.id}>`);
     }
 }
 

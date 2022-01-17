@@ -3,8 +3,8 @@ import Command, { CommandParams } from '../../client/Command';
 import { Pot } from '../../types/Economy';
 
 class GetPot implements Command {
-    public name: string = 'pot';
-    public description: string = 'See how big the winnings pot is';
+    public name = 'pot';
+    public description = 'See how big the winnings pot is';
     public aliases?: string[] = ['getpot'];
 
     public async execute({ client, message }: CommandParams) {

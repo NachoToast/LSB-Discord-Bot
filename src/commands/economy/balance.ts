@@ -23,11 +23,7 @@ class Baltop implements Command {
             if (!top10[i]) continue;
             const { id, balance } = top10[i];
 
-            desc.push(
-                `${
-                    i < 3 ? Levels.medalGiver(i) + ' ' : `${i + 1}.`
-                } <@${id}> - **${balance}** Param Pupees`,
-            );
+            desc.push(`${i < 3 ? Levels.medalGiver(i) + ' ' : `${i + 1}.`} <@${id}> - **${balance}** Param Pupees`);
         }
 
         messageEmbed.setDescription('\u200b\n' + desc.join('\n\n'));
@@ -51,26 +47,22 @@ class SetBalance implements Command {
         const targetUser = await Client.getTargetUser(message, args);
         const targetAmount = Number(args[1]);
 
-        if (targetUser === null)
-            return message.channel.send(`Invalid user, '${Client.filterMentions(args[0])}'`);
+        if (targetUser === null) return message.channel.send(`Invalid user, '${Client.filterMentions(args[0])}'`);
         if (args[1] === '' || Number.isNaN(targetAmount))
             return message.channel.send(`${Client.filterMentions(args[1])} is not a valid numer`);
 
-        let user = client.economy.getOrMakeUser(targetUser.id);
+        const user = client.economy.getOrMakeUser(targetUser.id);
 
         client.economy.setUserBalance(user, targetAmount);
         message.channel.send(
-            `Set <@${targetUser.id}>'s balance to ${user.balance} Param Pupee${
-                user.balance !== 1 ? 's' : ''
-            }`,
+            `Set <@${targetUser.id}>'s balance to ${user.balance} Param Pupee${user.balance !== 1 ? 's' : ''}`,
         );
     }
 }
 
 class Balance implements Command {
     public readonly name: string = 'balance';
-    public readonly description: string =
-        'Check the number of Param Pupees you or someone else has';
+    public readonly description: string = 'Check the number of Param Pupees you or someone else has';
     public readonly aliases: string[] | undefined = ['bal'];
 
     public async execute({ client, message, args }: CommandParams) {

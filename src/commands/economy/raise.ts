@@ -1,8 +1,8 @@
 import Command, { CommandParams } from '../../client/Command';
 
 class Raise implements Command {
-    public name: string = 'raise';
-    public description: string = 'See if you can get a raise';
+    public name = 'raise';
+    public description = 'See if you can get a raise';
 
     public async execute({ message }: CommandParams) {
         message.channel.send(`No raise for you`);

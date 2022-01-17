@@ -3,9 +3,8 @@ import Client from '../../../client/Client';
 import Command, { CommandParams } from '../../../client/Command';
 
 class ConfigureGambling implements Command {
-    public name: string = 'gambling';
-    public description: string =
-        'Configure what channel to allow slots and other gambling commands in';
+    public name = 'gambling';
+    public description = 'Configure what channel to allow slots and other gambling commands in';
     public async execute({ client, message }: CommandParams) {
         const existingConfig = client.guildConfig.getOrMakeGuildConfig(message.guildId!);
 
