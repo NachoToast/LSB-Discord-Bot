@@ -37,18 +37,18 @@ class Work implements Command {
         const user = client.economy.getOrMakeUser(message.author.id);
 
         if (afterNasaBonus) {
-            output.push(`🔥  **x2** multiplier (Nasa bonus)`);
+            output.push('🔥  **x2** multiplier (Nasa bonus)');
             netAmount *= 2;
             user.miningStats.nasaBonuses++;
         }
         if (topOfTheHourBonus) {
-            output.push(`🕛  **+10** Param Pupees (top of the hour bonus)`);
+            output.push('🕛  **+10** Param Pupees (top of the hour bonus)');
             netAmount += 10;
             user.miningStats.hourBonuses++;
         }
 
         if (topOfTheDayBonus) {
-            output.push(`📆  **+50** Param Pupees (top of the day bonus)`);
+            output.push('📆  **+50** Param Pupees (top of the day bonus)');
             netAmount += 50;
             user.miningStats.dayBonuses++;
         }
@@ -56,11 +56,11 @@ class Work implements Command {
         if (muskBonus) {
             if (message.author.id === '294330990489239562') {
                 // hasidu has -100, everyone else has +100
-                output.push(`💎  **-100** Param Pupees (Elon bonus)`);
+                output.push('💎  **-100** Param Pupees (Elon bonus)');
                 netAmount -= 100;
                 user.miningStats.elonBonuses++;
             } else {
-                output.push(`💎  **+100** Param Pupees (Elon bonus)`);
+                output.push('💎  **+100** Param Pupees (Elon bonus)');
                 netAmount += 100;
                 user.miningStats.elonBonuses++;
             }

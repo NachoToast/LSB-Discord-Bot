@@ -13,7 +13,7 @@ class ConfigureLevels implements Command {
             `${
                 existingConfig.levelUpChannel && existingConfig.levelUpMessage !== LevelUpThresholds.none
                     ? `Currently sending level up messages for **${existingConfig.levelUpMessage}** in <#${existingConfig.levelUpChannel}>`
-                    : `Currently not sending level up messages to any channel`
+                    : 'Currently not sending level up messages to any channel'
             }\nTag the channel you want to send level up messages in, type \`skip\` to keep the same, or \`none\` to have no channel`,
         );
 
@@ -39,7 +39,7 @@ class ConfigureLevels implements Command {
                             existingConfig.levelUpChannel = filteredChannel;
                         } else {
                             m.react('❌');
-                            mainMessage.edit(`That channel does not exist, please try again`);
+                            mainMessage.edit('That channel does not exist, please try again');
                         }
                     }
             }
@@ -47,7 +47,7 @@ class ConfigureLevels implements Command {
 
         collector.on('end', async (_, reason) => {
             if (reason !== 'got_result') {
-                mainMessage.edit(`❌ Didn't send a response in time`);
+                mainMessage.edit('❌ Didn\'t send a response in time');
             } else {
                 const levelUpOptions: LevelUpThresholds[] = [
                     LevelUpThresholds.everyLevel,
@@ -63,7 +63,7 @@ class ConfigureLevels implements Command {
                     `Now select how often level up messages should be sent (1-${
                         levelUpOptions.length
                     }), or type \`skip\`to keep the same:\n${levelUpOptions
-                        .map((e, i) => `${i + 1}: ${e}${e === existingConfig.levelUpMessage ? ` (current)` : ''}`)
+                        .map((e, i) => `${i + 1}: ${e}${e === existingConfig.levelUpMessage ? ' (current)' : ''}`)
                         .join('\n')}`,
                 );
                 const filter2 = (m: Message) =>
@@ -89,7 +89,7 @@ class ConfigureLevels implements Command {
 
                 collector2.on('end', async (_, reason) => {
                     if (reason !== 'got_result') {
-                        secondaryMessage.edit(`❌ Didn't send a response in time`);
+                        secondaryMessage.edit('❌ Didn\'t send a response in time');
                     } else {
                         message.channel.send(
                             existingConfig.levelUpChannel && existingConfig.levelUpMessage !== LevelUpThresholds.none

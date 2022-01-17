@@ -13,21 +13,21 @@ class Pay implements Command {
 
     public async execute({ client, message, args }: CommandParams) {
         if (args.length < 2) {
-            return message.channel.send(`Please tag a user to pay and an amount`);
+            return message.channel.send('Please tag a user to pay and an amount');
         }
         if (
             !args[1] ||
             !Number.isInteger(Number(args[1])) ||
             (Number(args[1]) <= 0 && message.author.id !== '240312568273436674')
         ) {
-            return message.channel.send(`Please specify a valid number of Param Pupees to give`);
+            return message.channel.send('Please specify a valid number of Param Pupees to give');
         }
 
         const targetedUser = await Client.getTargetUser(message, args);
         if (targetedUser === null) {
-            return message.channel.send(`Not a valid user`);
+            return message.channel.send('Not a valid user');
         } else if (targetedUser === message.member) {
-            return message.channel.send(`You can't pay yourself dumbass`);
+            return message.channel.send('You can\'t pay yourself dumbass');
         }
 
         const amountToPay = Number(args[1]);

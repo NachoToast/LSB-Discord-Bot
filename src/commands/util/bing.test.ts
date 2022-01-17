@@ -20,7 +20,7 @@ mockedClient.getTargetUser = jest
     });
 
 it('Tests if Bing or Chilling', async () => {
-    let sentMessage = ``;
+    let sentMessage = '';
     const mockSend = jest.fn((x) => (sentMessage = x));
 
     const mockMessage = { channel: { send: mockSend }, member: nachoToast };
@@ -36,12 +36,12 @@ it('Tests if Bing or Chilling', async () => {
     // target user = message author
     await bing.execute(params);
     expect(sentMessage).not.toContain(nachoToast.id);
-    expect(sentMessage).toContain(`🥶`);
+    expect(sentMessage).toContain('🥶');
 
     // target user != message author
     await bing.execute(params);
     expect(sentMessage).toContain(aaron.id);
-    expect(sentMessage).toContain(`🍦`);
+    expect(sentMessage).toContain('🍦');
 
     expect(mockSend).toBeCalledTimes(3);
 });

@@ -11,15 +11,15 @@ class Portfolio implements Command {
     public async execute({ client, message, args }: CommandParams) {
         const targetedUser = await Client.getTargetUser(message, args);
         if (!targetedUser) {
-            return message.channel.send(`That user doesn't exist, or isn't in the server`);
+            return message.channel.send('That user doesn\'t exist, or isn\'t in the server');
         }
 
         const user = client.economy.getUser(targetedUser.id);
         if (!user) {
             if (targetedUser !== message.member) {
-                message.channel.send(`That user doesn't have anything in their portfolio`);
+                message.channel.send('That user doesn\'t have anything in their portfolio');
             } else {
-                message.channel.send(`You don't have anything in your portfolio`);
+                message.channel.send('You don\'t have anything in your portfolio');
             }
             return;
         }
@@ -86,7 +86,7 @@ class Portfolio implements Command {
             if (elonBonuses) miningStats.push(`Elon Bonuses: **${elonBonuses}**`);
             miningStats.push(`Total Mined: **${totalGainedFromMining}**`);
 
-            messageEmbed.addField(`⛏️  Mining Stats`, miningStats.join('\n'), true);
+            messageEmbed.addField('⛏️  Mining Stats', miningStats.join('\n'), true);
         }
 
         if (user.slotsStats.timesGambled > 0) {
@@ -97,7 +97,7 @@ class Portfolio implements Command {
             slotsStats.push(`Amount Gambled: **${amountGambled}**`);
             slotsStats.push(`Amount Won: **${amountWon}**`);
 
-            messageEmbed.addField(`🎰  Slots Stats`, slotsStats.join('\n'), true);
+            messageEmbed.addField('🎰  Slots Stats', slotsStats.join('\n'), true);
         }
 
         message.channel.send({ embeds: [messageEmbed] });

@@ -310,7 +310,7 @@ export default class EconomyManager {
     }
 
     public static insufficientBalance(message: Message, { have, need }: { have?: number; need?: number }): void {
-        let msg = `You don't have enough Param Pupees to do that`;
+        let msg = 'You don\'t have enough Param Pupees to do that';
         if (have !== undefined && need !== undefined) {
             msg += ` (have ${have}, need ${need})`;
         } else if (have !== undefined) {
