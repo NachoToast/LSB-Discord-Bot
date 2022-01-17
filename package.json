@@ -1,33 +1,39 @@
 {
-  "name": "lsb-discord-bot",
-  "version": "0.0.1",
-  "main": "./build/index.js",
-  "license": "CC-BY-SA-4.0",
-  "scripts": {
-    "dev": "nodemon ./src/index.ts --devmode",
-    "typecheck": "tsc --noEmit",
-    "build": "tsc",
-    "start": "node .",
-    "port": "node ./scripts/portMee6Data.js",
-    "test": "jest"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.16.7",
-    "@babel/preset-env": "^7.16.8",
-    "@babel/preset-typescript": "^7.16.7",
-    "@types/jest": "^27.4.0",
-    "@types/node": "^17.0.5",
-    "@types/seedrandom": "^3.0.1",
-    "babel-jest": "^27.4.6",
-    "jest": "^27.4.7",
-    "nodemon": "^2.0.15",
-    "ts-node": "^10.4.0",
-    "typescript": "^4.5.4"
-  },
-  "dependencies": {
-    "discord.js": "^13.6.0",
-    "moment": "^2.29.1",
-    "seedrandom": "^3.0.5",
-    "tiny-typed-emitter": "^2.1.0"
-  }
+    "name": "lsb-discord-bot",
+    "version": "0.0.1",
+    "main": "./build/index.js",
+    "license": "CC-BY-SA-4.0",
+    "scripts": {
+        "dev": "nodemon ./src/index.ts --devmode",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint --ext .ts src --max-warnings=0",
+        "build": "tsc",
+        "start": "node .",
+        "port": "node ./scripts/portMee6Data.js",
+        "test": "jest"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.16.7",
+        "@babel/preset-env": "^7.16.8",
+        "@babel/preset-typescript": "^7.16.7",
+        "@types/jest": "^27.4.0",
+        "@types/node": "^17.0.5",
+        "@types/seedrandom": "^3.0.1",
+        "@typescript-eslint/eslint-plugin": "^5.9.1",
+        "@typescript-eslint/parser": "^5.9.1",
+        "babel-jest": "^27.4.6",
+        "eslint": "^8.7.0",
+        "eslint-config-prettier": "^8.3.0",
+        "jest": "^27.4.7",
+        "nodemon": "^2.0.15",
+        "prettier": "^2.5.1",
+        "ts-node": "^10.4.0",
+        "typescript": "^4.5.4"
+    },
+    "dependencies": {
+        "discord.js": "^13.6.0",
+        "moment": "^2.29.1",
+        "seedrandom": "^3.0.5",
+        "tiny-typed-emitter": "^2.1.0"
+    }
 }
