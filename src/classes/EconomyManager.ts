@@ -8,7 +8,7 @@ export default class EconomyManager {
     private _userDataManager = new DataManager('data/economy/users.json', JSON.stringify({}, undefined, 4));
     private _userCooldowns: { [discordID: string]: { [key in ActionCooldownTypes]?: number } } = {};
 
-    private _pots: { [guildId: Snowflake]: Pot } = {};
+    private _pots: { [guildId: Snowflake]: Pot };
     private _potDataManager = new DataManager('data/economy/pots.json', JSON.stringify({}, undefined, 4));
 
     private _config: Config['economy'];
@@ -17,6 +17,7 @@ export default class EconomyManager {
         this._config = config;
 
         this._userData = JSON.parse(this._userDataManager.data);
+        this._pots = JSON.parse(this._potDataManager.data);
     }
 
     /** This is used for when fields are missing. */
@@ -310,7 +311,7 @@ export default class EconomyManager {
     }
 
     public static insufficientBalance(message: Message, { have, need }: { have?: number; need?: number }): void {
-        let msg = 'You don\'t have enough Param Pupees to do that';
+        let msg = "You don't have enough Param Pupees to do that";
         if (have !== undefined && need !== undefined) {
             msg += ` (have ${have}, need ${need})`;
         } else if (have !== undefined) {
