@@ -23,7 +23,7 @@ it('Lists client commands', () => {
         client: mockClient,
         message: mockMessage,
         chosenPrefix: '!',
-    } as any as CommandParams;
+    } as unknown as CommandParams;
 
     const list = new List();
     list.execute(params);

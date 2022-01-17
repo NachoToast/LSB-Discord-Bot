@@ -8,7 +8,7 @@ it('Gets client latency', () => {
     const mockClient = { ws: { ping: 123 } };
     const mockMessage = { createdTimestamp: Date.now() - 1000, channel: { send: mockSend } };
 
-    const params = { client: mockClient, message: mockMessage } as any as CommandParams;
+    const params = { client: mockClient, message: mockMessage } as unknown as CommandParams;
 
     const ping = new Ping();
     ping.execute(params);
