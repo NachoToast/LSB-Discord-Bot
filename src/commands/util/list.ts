@@ -1,6 +1,6 @@
 import Command, { CommandParams } from '../../client/Command';
 
-class List implements Command {
+export class List implements Command {
     public readonly name: string = 'list';
     public readonly description: string = 'List all the commands';
     public readonly aliases: string[] | undefined = ['l'];

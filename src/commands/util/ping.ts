@@ -1,6 +1,6 @@
 import Command, { CommandParams } from '../../client/Command';
 
-class Ping implements Command {
+export class Ping implements Command {
     public readonly name: string = 'ping';
     public readonly description: string = 'Check if the bot is working';
 

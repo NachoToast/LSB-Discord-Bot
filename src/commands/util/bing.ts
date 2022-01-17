@@ -2,7 +2,7 @@ import Command, { CommandParams } from '../../client/Command';
 import seedrandom from 'seedrandom';
 import Client from '../../client/Client';
 
-class Bing implements Command {
+export class Bing implements Command {
     public name: string = 'bing';
     public aliases?: string[] | undefined = ['chilling', 'bingchilling'];
     public description: string = 'See whether you are bing or chilling';
