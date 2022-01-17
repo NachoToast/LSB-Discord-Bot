@@ -18,11 +18,11 @@ _Follow these instructions to set up your own development version of the bot._
 
 1. Register your bot on the [Discord Developer Portal](https://discord.com/developers/applications).
 
-    - Intents:
+    - Intents
         - Presence
         - Server Members
         - Message Content
-    - Permissions:
+    - Permissions
         - Administrator
 
 2. Invite the bot to your Discord server using the OAuth2 URL Generator with the `bot` scope and `Administrator` bot permission.
