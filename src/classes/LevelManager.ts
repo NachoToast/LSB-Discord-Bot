@@ -1,13 +1,4 @@
-import {
-    DiscordAPIError,
-    GuildMember,
-    GuildMemberManager,
-    Message,
-    User,
-    Channel,
-    TextChannel,
-    AnyChannel,
-} from 'discord.js';
+import { DiscordAPIError, GuildMember, GuildMemberManager, Message, User, AnyChannel } from 'discord.js';
 import Client from '../client/Client';
 import { LevelUpThresholds } from '../types/GuildConfig';
 import { FullLevelUser, LevelUser } from '../types/UserModels';
@@ -40,7 +31,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
             console.log(`Loading Legacy Data (${legacyData.length} Users)`);
 
             for (const { id, level, xp } of legacyData) {
-                startingData[id] = { level, xp, leftServer: undefined as any as boolean };
+                startingData[id] = { level, xp, leftServer: undefined as unknown as boolean };
             }
         } catch (error) {
             if (!(error instanceof Error && error.message.includes('../../archive/mee6.json'))) {
@@ -67,8 +58,8 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
         });
     }
 
-    public validationProgress: number = 0;
-    public async validateAllUsersInBackground(save: boolean = true) {
+    public validationProgress = 0;
+    public async validateAllUsersInBackground(save = true) {
         const objKeys = Object.keys(this._levelData);
 
         if (!objKeys.some((key) => this._levelData[key].leftServer === undefined)) {
@@ -102,7 +93,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
     /** Makes sure the user is in the server.
      * @returns {boolean} Whether the user is valid for ranking.
      */
-    private async validateUser(id: string, guildMembers: GuildMemberManager, save: boolean = true): Promise<boolean> {
+    private async validateUser(id: string, guildMembers: GuildMemberManager, save = true): Promise<boolean> {
         if (this._levelData[id]?.leftServer !== undefined) {
             return !this._levelData[id].leftServer;
         }
@@ -137,7 +128,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
      * @param {number} currentXP The total amount of experience you currently have.
      * @see [GitHub Source](https://github.com/PsKramer/mee6calc/blob/master/calc.js)
      */
-    public static xpToLevel(levelDesired: number, currentXP: number = 0): number {
+    public static xpToLevel(levelDesired: number, currentXP = 0): number {
         // https://github.com/PsKramer/mee6calc/blob/master/calc.js
         const xpNeededFromNone = (5 / 6) * levelDesired * (2 * levelDesired ** 2 + 27 * levelDesired + 91);
         return Math.floor(xpNeededFromNone - currentXP);
@@ -151,7 +142,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
     }
 
     /** @returns Random amount of XP between 15 and 25 (exclusive)  */
-    private static randomXPAmount(multiplier: number = 1): number {
+    private static randomXPAmount(multiplier = 1): number {
         const baseXP = 15 + Math.floor(Math.random() * 10);
         return baseXP * multiplier;
     }
@@ -223,7 +214,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
      * @param {GuildMemberManager} guildMembers The guild member manager for the guild,
      * this should always be the Client's primary guild.
      */
-    public async getUserRanking(guildMembers: GuildMemberManager, numUsers: number = 10): Promise<FullLevelUser[]> {
+    public async getUserRanking(guildMembers: GuildMemberManager, numUsers = 10): Promise<FullLevelUser[]> {
         const topX: FullLevelUser[] = new Array(numUsers);
 
         for (const id of Object.keys(this._levelData)) {
@@ -244,7 +235,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
         return topX;
     }
 
-    private async messageAryan(member: GuildMember, newLevel: number): Promise<any> {
+    private async messageAryan(member: GuildMember, newLevel: number): Promise<void> {
         try {
             if (
                 newLevel !== 2 &&
