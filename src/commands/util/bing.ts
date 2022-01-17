@@ -3,14 +3,13 @@ import seedrandom from 'seedrandom';
 import Client from '../../client/Client';
 
 export class Bing implements Command {
-    public name: string = 'bing';
+    public name = 'bing';
     public aliases?: string[] | undefined = ['chilling', 'bingchilling'];
-    public description: string = 'See whether you are bing or chilling';
+    public description = 'See whether you are bing or chilling';
     public async execute({ args, message }: CommandParams) {
         const targetUser = await Client.getTargetUser(message, args);
 
-        if (!targetUser)
-            return message.channel.send(`https://c.tenor.com/QA_IqSKoWTcAAAAC/the-rock.gif`);
+        if (!targetUser) return message.channel.send(`https://c.tenor.com/QA_IqSKoWTcAAAAC/the-rock.gif`);
 
         const holyRNG = Math.floor(seedrandom(targetUser.id)() * 2); // 0 or 1
 

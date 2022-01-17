@@ -4,16 +4,14 @@ import Command, { CommandParams } from '../../../client/Command';
 import { LevelUpThresholds } from '../../../types/GuildConfig';
 
 class ConfigureLevels implements Command {
-    public name: string = 'levels';
-    public description: string =
-        'Configure what channel to send level up notifications to, and when to send them';
+    public name = 'levels';
+    public description = 'Configure what channel to send level up notifications to, and when to send them';
     public async execute({ client, message }: CommandParams) {
         const existingConfig = client.guildConfig.getOrMakeGuildConfig(message.guildId!);
 
         const mainMessage = await message.channel.send(
             `${
-                existingConfig.levelUpChannel &&
-                existingConfig.levelUpMessage !== LevelUpThresholds.none
+                existingConfig.levelUpChannel && existingConfig.levelUpMessage !== LevelUpThresholds.none
                     ? `Currently sending level up messages for **${existingConfig.levelUpMessage}** in <#${existingConfig.levelUpChannel}>`
                     : `Currently not sending level up messages to any channel`
             }\nTag the channel you want to send level up messages in, type \`skip\` to keep the same, or \`none\` to have no channel`,
@@ -65,12 +63,7 @@ class ConfigureLevels implements Command {
                     `Now select how often level up messages should be sent (1-${
                         levelUpOptions.length
                     }), or type \`skip\`to keep the same:\n${levelUpOptions
-                        .map(
-                            (e, i) =>
-                                `${i + 1}: ${e}${
-                                    e === existingConfig.levelUpMessage ? ` (current)` : ''
-                                }`,
-                        )
+                        .map((e, i) => `${i + 1}: ${e}${e === existingConfig.levelUpMessage ? ` (current)` : ''}`)
                         .join('\n')}`,
                 );
                 const filter2 = (m: Message) =>
@@ -99,8 +92,7 @@ class ConfigureLevels implements Command {
                         secondaryMessage.edit(`❌ Didn't send a response in time`);
                     } else {
                         message.channel.send(
-                            existingConfig.levelUpChannel &&
-                                existingConfig.levelUpMessage !== LevelUpThresholds.none
+                            existingConfig.levelUpChannel && existingConfig.levelUpMessage !== LevelUpThresholds.none
                                 ? `Now sending level up messages for **${existingConfig.levelUpMessage}** in <#${existingConfig.levelUpChannel}>`
                                 : 'No longer sending level up messages to any channel',
                         );

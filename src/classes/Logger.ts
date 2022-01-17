@@ -2,7 +2,7 @@ export default class Logger {
     private readonly _logMap: { [key: string]: string } = {};
 
     public log(key: string, value: string) {
-        let linesToClear = Object.keys(this._logMap).length;
+        const linesToClear = Object.keys(this._logMap).length;
         this._logMap[key] = value;
         this.update(linesToClear);
     }

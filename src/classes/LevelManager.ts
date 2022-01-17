@@ -49,10 +49,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
             }
         }
 
-        this._levelDataManager = new DataManager(
-            'data/levels/users.json',
-            JSON.stringify(startingData, undefined, 4),
-        );
+        this._levelDataManager = new DataManager('data/levels/users.json', JSON.stringify(startingData, undefined, 4));
         this._levelData = JSON.parse(this._levelDataManager.data);
 
         client.on('messageCreate', (message) => this.handleMessage(message));
@@ -105,11 +102,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
     /** Makes sure the user is in the server.
      * @returns {boolean} Whether the user is valid for ranking.
      */
-    private async validateUser(
-        id: string,
-        guildMembers: GuildMemberManager,
-        save: boolean = true,
-    ): Promise<boolean> {
+    private async validateUser(id: string, guildMembers: GuildMemberManager, save: boolean = true): Promise<boolean> {
         if (this._levelData[id]?.leftServer !== undefined) {
             return !this._levelData[id].leftServer;
         }
@@ -146,8 +139,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
      */
     public static xpToLevel(levelDesired: number, currentXP: number = 0): number {
         // https://github.com/PsKramer/mee6calc/blob/master/calc.js
-        const xpNeededFromNone =
-            (5 / 6) * levelDesired * (2 * levelDesired ** 2 + 27 * levelDesired + 91);
+        const xpNeededFromNone = (5 / 6) * levelDesired * (2 * levelDesired ** 2 + 27 * levelDesired + 91);
         return Math.floor(xpNeededFromNone - currentXP);
     }
 
@@ -201,27 +193,17 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
         this._levelDataManager.data = JSON.stringify(this._levelData, undefined, 4);
     }
 
-    public static makeCoolBarOutOfBingChilling(
-        currentProgress: number,
-        maxProgress: number,
-    ): string {
+    public static makeCoolBarOutOfBingChilling(currentProgress: number, maxProgress: number): string {
         const bing = '🥶';
         const chilling = '😬';
 
         const numOfBing = Math.floor((10 * currentProgress) / maxProgress);
 
-        return (
-            new Array(numOfBing).fill(bing).join(' ') +
-            '  ' +
-            new Array(10 - numOfBing).fill(chilling).join(' ')
-        );
+        return new Array(numOfBing).fill(bing).join(' ') + '  ' + new Array(10 - numOfBing).fill(chilling).join(' ');
     }
 
     /** Gets the rank of a single user. `rank` does not include people who have left the server, but `rankIncludingLeft` does. */
-    public async getExperienceRanking(
-        guildMembers: GuildMemberManager,
-        experience: number,
-    ): Promise<[number, number]> {
+    public async getExperienceRanking(guildMembers: GuildMemberManager, experience: number): Promise<[number, number]> {
         let rank = 0;
         let rankIncludingLeft = 0;
 
@@ -241,10 +223,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
      * @param {GuildMemberManager} guildMembers The guild member manager for the guild,
      * this should always be the Client's primary guild.
      */
-    public async getUserRanking(
-        guildMembers: GuildMemberManager,
-        numUsers: number = 10,
-    ): Promise<FullLevelUser[]> {
+    public async getUserRanking(guildMembers: GuildMemberManager, numUsers: number = 10): Promise<FullLevelUser[]> {
         const topX: FullLevelUser[] = new Array(numUsers);
 
         for (const id of Object.keys(this._levelData)) {
@@ -321,9 +300,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
                 return;
         }
 
-        const channel: AnyChannel | null = await this._client.channels.fetch(
-            guildConfig.levelUpChannel,
-        );
+        const channel: AnyChannel | null = await this._client.channels.fetch(guildConfig.levelUpChannel);
         if (channel === null || channel.type !== 'GUILD_TEXT') return;
 
         try {

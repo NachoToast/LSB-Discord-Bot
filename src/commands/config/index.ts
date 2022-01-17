@@ -5,8 +5,8 @@ import levels from './configure/levels';
 import gambling from './configure/gambling';
 
 class Config implements Command {
-    public name: string = 'config';
-    public description: string = "See this server's bot config";
+    public name = 'config';
+    public description = "See this server's bot config";
     public aliases?: string[] | undefined = ['conf', 'settings', 'guildconfig', 'guildconf'];
 
     public async execute({ client, message, args }: CommandParams) {
@@ -19,10 +19,7 @@ class Config implements Command {
             return message.channel.send(output.join('\n'));
         }
 
-        const outputConfig: string[] = [
-            `Prefixes: \`${client.prefixes.join(`\`, \``)}\``,
-            `**Level Config:**`,
-        ];
+        const outputConfig: string[] = [`Prefixes: \`${client.prefixes.join(`\`, \``)}\``, `**Level Config:**`];
 
         if (guildConfig.levelUpChannel && guildConfig.levelUpMessage !== LevelUpThresholds.none) {
             outputConfig.push(
@@ -44,8 +41,8 @@ class Config implements Command {
 }
 
 class ClientConfig implements Command {
-    public name: string = 'clientconfig';
-    public description: string = "See the bot's global config";
+    public name = 'clientconfig';
+    public description = "See the bot's global config";
     public aliases?: string[] = ['clientconf'];
     public async execute({ client, message }: CommandParams) {
         const config = client.config;
@@ -60,8 +57,8 @@ class ClientConfig implements Command {
 }
 
 class Configure implements Command {
-    public name: string = 'configure';
-    public description: string = 'Configure a specific module for the server';
+    public name = 'configure';
+    public description = 'Configure a specific module for the server';
     public aliases?: string[] = ['setconf'];
     public adminOnly = true;
     public exampleUsage(chosenPrefix: string): string {
@@ -85,9 +82,7 @@ class Configure implements Command {
             default:
                 return message.channel.send(
                     Client.filterMentions(
-                        `Option '${args[0]}' not recognized, try one of: \`${this.configurable.join(
-                            `\`, \``,
-                        )}\``,
+                        `Option '${args[0]}' not recognized, try one of: \`${this.configurable.join(`\`, \``)}\``,
                     ),
                 );
         }

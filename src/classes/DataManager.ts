@@ -6,11 +6,7 @@ export default class DataManager {
     private _encoding: BufferEncoding;
 
     /** @param {string} fileName Path to file from root directory, e.g. `data/users/NachoToast.json` */
-    public constructor(
-        fileName: string,
-        initialContent: string,
-        encoding: BufferEncoding = 'utf-8',
-    ) {
+    public constructor(fileName: string, initialContent: string, encoding: BufferEncoding = 'utf-8') {
         this._fileName = fileName;
         this._encoding = encoding;
 
