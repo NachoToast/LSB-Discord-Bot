@@ -7,6 +7,7 @@
         "dev": "nodemon ./src/index.ts --devmode",
         "typecheck": "tsc --noEmit",
         "lint": "eslint --ext .ts src --max-warnings=0",
+        "lint:fix": "eslint --ext .ts src --fix",
         "build": "tsc",
         "start": "node .",
         "port": "node ./scripts/portMee6Data.js",
