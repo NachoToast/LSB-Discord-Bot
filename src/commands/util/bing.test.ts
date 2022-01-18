@@ -7,7 +7,7 @@ jest.mock('../../client/Client');
 const mockedClient = Client as jest.MockedClass<typeof Client>;
 
 const nachoToast = { id: '240312568273436674' };
-const aaron = { id: '201892070091128832' };
+const erin = { id: '201892070091128832' };
 
 mockedClient.getTargetUser = jest
     .fn()
@@ -16,32 +16,29 @@ mockedClient.getTargetUser = jest
         return nachoToast;
     })
     .mockImplementationOnce(() => {
-        return aaron;
+        return erin;
     });
 
-it('Tests if Bing or Chilling', async () => {
-    let sentMessage = '';
-    const mockSend = jest.fn((x) => (sentMessage = x));
+describe('!bing', () => {
+    const send = jest.fn();
+    const message = { channel: { send }, member: nachoToast };
 
-    const mockMessage = { channel: { send: mockSend }, member: nachoToast };
+    const params = { message } as unknown as CommandParams;
 
-    const params = { message: mockMessage } as unknown as CommandParams;
-
-    // no target user
     const bing = new Bing();
-    await bing.execute(params);
-    expect(sentMessage).not.toContain('🥶');
-    expect(sentMessage).not.toContain('🍦');
 
-    // target user = message author
-    await bing.execute(params);
-    expect(sentMessage).not.toContain(nachoToast.id);
-    expect(sentMessage).toContain('🥶');
+    it('handles no target user', async () => {
+        await bing.execute(params);
+        expect(send).toBeCalledWith(expect.not.stringContaining('🥶') && expect.not.stringContaining('🍦'));
+    });
 
-    // target user != message author
-    await bing.execute(params);
-    expect(sentMessage).toContain(aaron.id);
-    expect(sentMessage).toContain('🍦');
+    it('handles message author being bing', async () => {
+        await bing.execute(params);
+        expect(send).toBeCalledWith(expect.stringContaining('🥶') && expect.not.stringContaining(nachoToast.id));
+    });
 
-    expect(mockSend).toBeCalledTimes(3);
+    it('handles target user being chilling', async () => {
+        await bing.execute(params);
+        expect(send).toBeCalledWith(expect.stringContaining('🍦') && expect.stringContaining(erin.id));
+    });
 });
