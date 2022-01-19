@@ -8,6 +8,7 @@ const wait = promisify(setTimeout);
 class Slots implements Command {
     public name = 'slots';
     public description = 'Play some slots';
+    public readonly aliases?: string[] | undefined = ['gamble', 'bet'];
 
     private _cooldowns: { [userId: Snowflake]: boolean } = {};
 
