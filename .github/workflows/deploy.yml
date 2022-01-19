@@ -1,0 +1,21 @@
+# pog pog pogu
+
+name: Deploy
+
+on:
+    push:
+        branches: [live]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: executing remote build process
+              uses: appleboy/ssh-action@v0.1.4
+              with:
+                  host: ${{ secrets.HOST }}
+                  username: ${{ secrets.USERNAME }}
+                  password: ${{ secrets.PASSWORD }}
+                  port: ${{ secrets.PORT }}
+                  script: ./lsb_bot.sh
