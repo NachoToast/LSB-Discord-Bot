@@ -7,7 +7,7 @@ import { Levels } from '../levels/levels';
 class Baltop implements Command {
     public readonly name: string = 'balancetop';
     public readonly description: string = 'List the 10 richest people from the server';
-    public readonly aliases?: string[] | undefined = ['baltop'];
+    public readonly aliases?: string[] | undefined = ['baltop', 'topbal', 'topbalance'];
 
     public async execute({ client, message }: CommandParams) {
         const top10 = client.economy.getTopBalance();

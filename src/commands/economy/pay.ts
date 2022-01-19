@@ -6,6 +6,7 @@ import { EconomyUser } from '../../types/Economy';
 class Pay implements Command {
     public readonly name: string = 'pay';
     public readonly description: string = 'Give someone some Param Pupees';
+    public readonly aliases?: string[] | undefined = ['transfer', 'give'];
 
     public exampleUsage(chosenPrefix: string): string {
         return `${chosenPrefix}pay <@925613504118022204> 100`;
