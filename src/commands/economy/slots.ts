@@ -62,7 +62,7 @@ class Slots implements Command {
         await sentMessage.edit(rolls.join(''));
 
         if (rolls[0] === rolls[1] && rolls[1] === rolls[2]) {
-            await message.channel.send(`3x ${rolls[0]}, poggers! You won **${pot.amount}** Param Pupees!`);
+            await message.channel.send(`3x ${rolls[0]}, poggers! <@${message.author.id}> you won **${pot.amount}** Param Pupees!`);
             client.economy.winPot(pot, economyUser, message.guildId!);
         } else {
             await message.channel.send(`unlucky (-${amountToBet})`);
