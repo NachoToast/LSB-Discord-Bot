@@ -6,9 +6,9 @@ export class Ping implements Command {
 
     public async execute({ client, message }: CommandParams) {
         message.channel.send(
-            `Pongers!\nMy latency: ${Math.abs(
-                Date.now() - message.createdTimestamp,
-            )}ms\nAPI Latency: ${Math.round(client.ws.ping)}ms`,
+            `**Pongers**!\nMy latency: ${Math.abs(Date.now() - message.createdTimestamp)}ms\nAPI Latency: ${Math.round(
+                client.ws.ping,
+            )}ms`,
         );
     }
 }
