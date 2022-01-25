@@ -46,7 +46,7 @@ class ConfigureGambling implements Command {
 
         collector.on('end', async (_, reason) => {
             if (reason !== 'got_result') {
-                mainMessage.edit('❌ Didn\'t send a response in time');
+                mainMessage.edit("❌ Didn't send a response in time");
             } else {
                 message.channel.send(
                     existingConfig.gamblingChannel
