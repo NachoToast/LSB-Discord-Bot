@@ -15,7 +15,7 @@
             "dayBonus": true
         },
         "slots": {
-            "initialPot": 100
+            "initialPot": 200
         }
     }
 }
