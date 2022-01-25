@@ -8,6 +8,11 @@ class Work implements Command {
     public readonly aliases?: string[] = ['mine'];
 
     public async execute({ message, client }: CommandParams) {
+        const miningChannels = client.guildConfig.getGuildConfig(message.guildId!)?.miningChannels;
+        if (miningChannels?.length && !miningChannels.includes(message.channelId)) {
+            return message.react('❌');
+        }
+
         const didMine = client.economy.mine(message.author.id);
 
         if (typeof didMine === 'number') {

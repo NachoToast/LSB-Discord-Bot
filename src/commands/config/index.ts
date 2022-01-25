@@ -3,6 +3,7 @@ import Command, { CommandParams } from '../../client/Command';
 import { LevelUpThresholds } from '../../types/GuildConfig';
 import levels from './configure/levels';
 import gambling from './configure/gambling';
+import mining from './configure/mining';
 
 class Config implements Command {
     public name = 'config';
@@ -36,6 +37,12 @@ class Config implements Command {
             outputConfig.push('No gambling channel');
         }
 
+        if (!guildConfig.miningChannels) {
+            outputConfig.push('Mining Channels: None');
+        } else {
+            outputConfig.push(`Mining Channels: <#${guildConfig.miningChannels.join('>, <#')}>`);
+        }
+
         message.channel.send(outputConfig.join('\n'));
     }
 }
@@ -64,7 +71,7 @@ class Configure implements Command {
     public exampleUsage(chosenPrefix: string): string {
         return `${chosenPrefix}configure levels`;
     }
-    private configurable: string[] = ['levels', 'gambling'];
+    private configurable: string[] = ['levels', 'gambling', 'mining'];
     public async execute(params: CommandParams) {
         const { args, message } = params;
 
@@ -79,6 +86,8 @@ class Configure implements Command {
                 return levels.execute(params);
             case 'gambling':
                 return gambling.execute(params);
+            case 'mining':
+                return mining.execute(params);
             default:
                 return message.channel.send(
                     Client.filterMentions(
