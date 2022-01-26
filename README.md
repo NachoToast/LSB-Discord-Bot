@@ -1,12 +1,6 @@
 # LSB Discord Bot
 
-A Discord.js bot for the LSB Discord server.
-
-# Roadmap
-
--   [x] Economy system for "Param Pupees"
--   [x] Levelling system like Mee6
--   [x] Guild specific configuration
+A [Discord.js](https://discord.js.org/#/) bot for the LSB Discord server.
 
 # Dependencies
 
