@@ -24,25 +24,19 @@ class Slots implements Command {
             return message.channel.send('Please wait for your current slots to finish');
         }
 
-        if (!args[0] || !Number.isInteger(Number(args[0])) || Number(args[0]) <= 0) {
-            return message.channel.send('Please specify a valid amount of Param Pupees to bet');
+        if (args[0] !== undefined) {
+            message.channel.send("You don't need to bet amounts anymore, it's always 10 Param Pupees");
         }
-
-        const amountToBet = Number(args[0]);
 
         const economyUser = client.economy.getOrMakeUser(message.author.id);
 
-        if (economyUser.balance < amountToBet) {
+        if (economyUser.balance < 10) {
             return EconomyManager.insufficientBalance(message, { have: economyUser.balance });
-        }
-
-        if (amountToBet < 5) {
-            return message.channel.send('Bruh u gotta at least bet 5');
         }
 
         this._cooldowns[message.author.id] = true;
         const pot = client.economy.getOrMakePot(message.guildId!);
-        client.economy.addToPot(pot, economyUser, amountToBet);
+        client.economy.addToPot(pot, economyUser, 10);
 
         // actual slots logic
         const setNumber = Math.floor(Math.random() * this._slotSets.length);
