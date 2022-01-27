@@ -67,7 +67,7 @@ class Slots implements Command {
             );
             client.economy.winPot(pot, economyUser, message.guildId!);
         } else {
-            await message.channel.send('unlucky (-' + args[0] + ')');
+            await message.channel.send(`unlucky (-${amountToBet})`);
         }
 
         delete this._cooldowns[message.author.id];
