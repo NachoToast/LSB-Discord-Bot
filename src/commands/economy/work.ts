@@ -57,7 +57,7 @@ class Work implements Command {
             netAmount += 50;
             user.miningStats.dayBonuses++;
         }
-        output.push('🎓 **+75** Param Pupees (online uni bonus)');
+        output.push('🧑‍💻 **+75** Param Pupees (online uni bonus)');
         netAmount += 75;
 
         if (muskBonus) {
