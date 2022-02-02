@@ -57,6 +57,8 @@ class Work implements Command {
             netAmount += 50;
             user.miningStats.dayBonuses++;
         }
+        output.push('🎓 **+75** Param Pupees (online uni bonus)');
+        netAmount += 75;
 
         if (muskBonus) {
             if (message.author.id === '294330990489239562') {
