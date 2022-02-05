@@ -1,4 +1,4 @@
-import { DiscordAPIError, GuildMember, GuildMemberManager, Message, User, AnyChannel } from 'discord.js';
+import { DiscordAPIError, GuildMember, GuildMemberManager, Message, AnyChannel } from 'discord.js';
 import Client from '../client/Client';
 import { LevelUpThresholds } from '../types/GuildConfig';
 import { FullLevelUser, LevelUser } from '../types/UserModels';
@@ -235,7 +235,7 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
         return topX;
     }
 
-    private async messageAryan(member: GuildMember, newLevel: number): Promise<void> {
+    private async messageLevelUp(member: GuildMember, newLevel: number): Promise<void> {
         try {
             if (
                 newLevel !== 2 &&
@@ -247,20 +247,19 @@ export default class LevelManager extends TypedEmitter<LevelManagerEvents> {
             ) {
                 return;
             }
-
-            const aryan: User = await this._client.users.fetch(
-                this._client.devMode ? '240312568273436674' : '342562027539136513',
+            const channel = await this._client.channels.fetch(
+                this._client.devMode ? '795106209946402841' : '513665778839453717',
             );
-            const dmChannel = await aryan.createDM();
+            if (!channel || channel.type !== 'GUILD_TEXT') return;
 
-            dmChannel.send(`Yoza, <@${member.id}> just went up to level ${newLevel}`);
+            channel.send(`Yoza, <@${member.id}> just went up to level ${newLevel}`);
         } catch (error) {
             // lmao
         }
     }
 
     public async handleLevelUpMessage(member: GuildMember, newLevel: number): Promise<void> {
-        this.messageAryan(member, newLevel);
+        this.messageLevelUp(member, newLevel);
         const guildConfig = this._client.guildConfig.getOrMakeGuildConfig(member.guild.id);
         if (!guildConfig || !guildConfig.levelUpChannel) return;
 
