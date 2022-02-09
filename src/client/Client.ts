@@ -12,7 +12,6 @@ import Logger from '../classes/Logger';
 class Client extends DiscordClient {
     public readonly devMode: boolean = process.argv.slice(2).includes('--devmode');
     private readonly _startTime = Date.now();
-
     public readonly config: Config;
 
     public readonly commands: Collection<string, Command> = new Collection();
