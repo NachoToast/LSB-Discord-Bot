@@ -1,6 +1,5 @@
-import { Client as DiscordClient, Collection, GuildMember, Message } from 'discord.js';
+import { Client as DiscordClient, Collection, GuildMember, Intents, Message } from 'discord.js';
 import Command, { CommandParams } from './Command';
-import intents from './Intents';
 import Config from '../types/Config';
 import Auth from '../types/Auth';
 import Colours, { colourCycle } from '../types/Colours';
@@ -35,7 +34,7 @@ class Client extends DiscordClient {
     public readonly guildConfig = new GuildConfigManager();
 
     public constructor() {
-        super({ intents });
+        super({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
         let token: string;
 
         // loading stuff from the config.json and auth.json files
