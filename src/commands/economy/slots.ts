@@ -41,36 +41,40 @@ class Slots implements Command {
         }
 
         this._cooldowns[message.author.id] = true;
-        const pot = client.economy.getOrMakePot(message.guildId!);
-        client.economy.addToPot(pot, economyUser, amountToBet);
+        try {
+            const pot = client.economy.getOrMakePot(message.guildId!);
+            client.economy.addToPot(pot, economyUser, amountToBet);
 
-        // actual slots logic
-        const setNumber = Math.floor(Math.random() * this._slotSets.length);
-        const emojiSet = await this.get7guildEmojis(message.guild!.emojis);
-        while (emojiSet.length < 7) {
-            // if there aren't enough guild emojis, fill it up with normal emojis
-            emojiSet.push(this._slotSets[setNumber][Math.floor(Math.random() * this._slotSets[setNumber].length)]);
+            // actual slots logic
+            const setNumber = Math.floor(Math.random() * this._slotSets.length);
+            const emojiSet = await this.get7guildEmojis(message.guild!.emojis);
+            while (emojiSet.length < 7) {
+                // if there aren't enough guild emojis, fill it up with normal emojis
+                emojiSet.push(this._slotSets[setNumber][Math.floor(Math.random() * this._slotSets[setNumber].length)]);
+            }
+
+            const rolls: string[] = [this.roll(emojiSet)];
+            const sentMessage = await message.channel.send(rolls.join(''));
+            await wait(1000);
+            rolls.push(this.roll(emojiSet));
+            await sentMessage.edit(rolls.join(''));
+            await wait(1000);
+            rolls.push(this.roll(emojiSet));
+            await sentMessage.edit(rolls.join(''));
+
+            if (rolls[0] === rolls[1] && rolls[1] === rolls[2]) {
+                await message.channel.send(
+                    `3x ${rolls[0]}, poggers! <@${message.author.id}> you won **${pot.amount}** Param Pupees!`,
+                );
+                client.economy.winPot(pot, economyUser, message.guildId!);
+            } else {
+                await message.channel.send(`unlucky (-${amountToBet})`);
+            }
+        } catch (error) {
+            await message.channel.send('an error occurred, unlucky');
+        } finally {
+            delete this._cooldowns[message.author.id];
         }
-
-        const rolls: string[] = [this.roll(emojiSet)];
-        const sentMessage = await message.channel.send(rolls.join(''));
-        await wait(1000);
-        rolls.push(this.roll(emojiSet));
-        await sentMessage.edit(rolls.join(''));
-        await wait(1000);
-        rolls.push(this.roll(emojiSet));
-        await sentMessage.edit(rolls.join(''));
-
-        if (rolls[0] === rolls[1] && rolls[1] === rolls[2]) {
-            await message.channel.send(
-                `3x ${rolls[0]}, poggers! <@${message.author.id}> you won **${pot.amount}** Param Pupees!`,
-            );
-            client.economy.winPot(pot, economyUser, message.guildId!);
-        } else {
-            await message.channel.send(`unlucky (-${amountToBet})`);
-        }
-
-        delete this._cooldowns[message.author.id];
     }
 
     // yes, this is the reason you suddenly win so much more rarely
