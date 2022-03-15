@@ -1346,10 +1346,10 @@
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.4.3.tgz#a3c65525b91fca7da00ab1a3ac2b5a2a4afbffbf"
   integrity sha512-QzSuZMBuG5u8HqYz01qtMdg/Jfctlnvj1z/lYnIDXs/golxw0fxtRAHd9KrzjR7Yxz1qVeI00o0kiO3PmVdJ9w==
 
-"@types/seedrandom@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@types/seedrandom/-/seedrandom-3.0.1.tgz#1254750a4fec4aff2ebec088ccd0bb02e91fedb4"
-  integrity sha512-giB9gzDeiCeloIXDgzFBCgjj1k4WxcDrZtGl6h1IqmUPlxF+Nx8Ve+96QCyDZ/HseB/uvDsKbpib9hU5cU53pw==
+"@types/seedrandom@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@types/seedrandom/-/seedrandom-3.0.2.tgz#7f30db28221067a90b02e73ffd46b6685b18df1a"
+  integrity sha512-YPLqEOo0/X8JU3rdiq+RgUKtQhQtrppE766y7vMTu8dGML7TVtZNiiiaC/hhU9Zqw9UYopXxhuWWENclMVBwKQ==
 
 "@types/stack-utils@^2.0.0":
   version "2.0.1"
